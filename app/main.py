@@ -15,16 +15,30 @@ import logging
 import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, status
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.model_loader import ModelNotLoadedError, model_holder
-from app.schemas import HealthResponse, PredictRequest, PredictResponse
+from app.schemas import (
+    MAX_YEAR,
+    MIN_YEAR,
+    HealthResponse,
+    OptionsResponse,
+    PredictRequest,
+    PredictResponse,
+)
 
 # Deployment environment. CD pipelines write this into the .env they generate
 # from GitHub Environments, so a running container can say which environment it
 # was built for.
 APP_ENV = os.environ.get("APP_ENV", "local")
+
+# The one-page form served at "/". It is copied into the image by
+# `COPY app/ ./app/`, so no extra build step is needed.
+STATIC_DIR = Path(__file__).parent / "static"
 
 # Uvicorn configures its own loggers but leaves application loggers without a
 # handler, so ``logger.info`` here would be silently dropped and the "model
@@ -64,6 +78,38 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+
+@app.get("/", include_in_schema=False)
+def index() -> FileResponse:
+    """Serve the one-page prediction form.
+
+    Kept out of the OpenAPI schema: it is a convenience UI, not part of the
+    contract a machine client should depend on.
+    """
+    return FileResponse(STATIC_DIR / "index.html", media_type="text/html")
+
+
+# ``group_map.json`` (which series belong to which Group) is a build artefact
+# committed next to the UI, so it ships with the image and needs no dataset at
+# runtime. Mounting the directory keeps that data fetchable by the page.
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+
+@app.get("/options", response_model=OptionsResponse, tags=["predict"])
+def options() -> OptionsResponse:
+    """Return the values a form should offer.
+
+    Categorical options come from the fitted encoder, not from the dataset, so
+    they stay correct in an image that ships without ``data/``.
+    """
+    return OptionsResponse(
+        categorical=model_holder.categories(),
+        year_min=MIN_YEAR,
+        year_max=MAX_YEAR,
+        month_min=1,
+        month_max=12,
+    )
 
 
 @app.get("/health", response_model=HealthResponse, tags=["ops"])

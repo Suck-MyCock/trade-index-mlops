@@ -37,7 +37,7 @@ inference API, and separate CI and delivery pipelines.
 feature branch
      │  git commit / git push
      ▼
-   dev  ──── pull request ───▶ CI: lint + format + 96 tests + docker build
+   dev  ──── pull request ───▶ CI: lint + format + 101 tests + docker build
      │                          (a red CI blocks the merge)
      │  merge
      ▼
@@ -94,7 +94,7 @@ Runs on **pull requests targeting `dev`, `staging` or `main`**, and on pushes to
 | Install | `pip install -r requirements-dev.txt` | runtime + test + lint dependencies |
 | Lint | `ruff check app ml tests` | static analysis |
 | Format | `ruff format --check app ml tests` | consistent formatting |
-| Test | `pytest -q` | 96 tests, all edge cases |
+| Test | `pytest -q` | 101 tests, all edge cases |
 | Build | `docker build -t trade-index:ci .` | the image must build |
 
 Nothing is pushed from CI. Publishing is the CD workflow's job.
@@ -191,14 +191,14 @@ Rationale for choosing the forest and for optimising RMSE is in
 
 ## Testing
 
-96 tests across four files.
+101 tests across four files.
 
 | File | Tests | Covers |
 |---|---|---|
 | `tests/unit/test_schemas.py` | 32 | year/month bounds, blank and missing required fields, extra fields, wrong types, optional-field normalisation, column order |
 | `tests/unit/test_data_pipeline.py` | 31 | column renaming, leaky-column removal, unit filtering, constant-column removal, target coercion, null handling, period parsing, idempotency |
 | `tests/integration/test_model_loader.py` | 8 | missing artifact, prediction before load, multi-row rejection, unseen categories, summary handling, reload |
-| `tests/api/test_predict_api.py` | 25 | health, deterministic predictions, 6 kinds of invalid payload, 9 per-field omissions, empty body, unseen categories, 503 without a model, OpenAPI schema |
+| `tests/api/test_predict_api.py` | 30 | health, deterministic predictions, 6 kinds of invalid payload, 9 per-field omissions, empty body, unseen categories, 503 without a model, OpenAPI schema |
 
 Notable boundary cases: years 1899/2100/2101/9999, months 0/−1/13/99, a string
 where an int is required, an empty JSON body, a category never seen during
@@ -221,8 +221,42 @@ pip install -r requirements-dev.txt
 python -m ml.data_pipeline          # build data/processed/clean_v2.csv
 python -m ml.train                  # train, log to MLflow, export models/model.joblib
 
-uvicorn app.main:app --reload       # http://127.0.0.1:8000/docs
+python -m uvicorn app.main:app --reload   # http://127.0.0.1:8000
 ```
+
+`uvicorn`, `pytest` and `ruff` are also importable modules, so `python -m <tool>`
+always works even when the console-script shims are missing from the venv.
+
+### The prediction form
+
+Open <http://127.0.0.1:8000/> for a one-page form. Three controls matter:
+
+| Control | Why |
+|---|---|
+| **Year** | the single strongest feature (importance 0.43); it moves the prediction by ~1000 across its range |
+| **Group** | selects which family of series you are describing (74 % of rows respond) |
+| **Series** | the commodity; the list narrows to the values that actually occur under the chosen group (median 11 instead of 180) |
+
+The remaining six fields live under *advanced* and are filled automatically
+from the chosen group, so a valid combination is the default rather than
+something you have to reconstruct by hand.
+
+**`month` is deliberately not a primary control.** Its feature importance is
+0.008, and switching it between 3 / 6 / 9 / 12 leaves the prediction unchanged
+for most rows — measured: median effect 0.00, and only 40 % of rows move at all.
+It stays in the API contract because the model consumes the feature, but
+offering it as a main knob would imply an influence it does not have. It is
+still reachable under *advanced*.
+
+The form is served by `GET /` and reads two APIs:
+
+- `GET /options` — categorical values taken from the fitted encoder, so every
+  option is a value the model can actually encode, even though the image ships
+  without `data/`.
+- `GET /static/group_map.json` — a committed build artefact recording which
+  series belong to which group, generated from the v2 dataset.
+
+`GET /docs` still exposes the raw OpenAPI UI for scripting.
 
 ### With Docker
 
@@ -255,9 +289,12 @@ Expected prediction: `1366.61`.
 ```text
 .
 ├── app/
-│   ├── main.py              # FastAPI app, /health and /predict, lifespan model load
-│   ├── model_loader.py      # loads the pipeline once, exposes predict()
-│   └── schemas.py           # request/response models and all input constraints
+│   ├── main.py              # FastAPI app: /, /options, /health, /predict
+│   ├── model_loader.py      # loads the pipeline once, exposes predict() and categories()
+│   ├── schemas.py           # request/response models and all input constraints
+│   └── static/
+│       ├── index.html       # the one-page prediction form
+│       └── group_map.json   # which series belong to which group (build artefact)
 ├── ml/
 │   ├── data_pipeline.py     # v1 → v2 cleaning and feature engineering
 │   ├── train.py             # trains both models, logs to MLflow, exports the artifact

@@ -230,8 +230,8 @@ footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);color:v
   <div class="meta-row">
     <span class="meta-pill">Suck-MyCock/trade-index-mlops</span>
     <span class="meta-pill">main · staging · dev</span>
-    <span class="meta-pill">96 tests</span>
-    <span class="meta-pill">验收 97/97</span>
+    <span class="meta-pill">101 tests</span>
+    <span class="meta-pill">验收 115/115</span>
   </div>
 </header>
 
@@ -248,7 +248,7 @@ footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);color:v
     <div class="kpi"><div class="k">数据版本</div><div class="v">2</div><div class="s">v1 / v2</div></div>
     <div class="kpi"><div class="k">实验</div><div class="v">2</div><div class="s">基线 / 调优</div></div>
     <div class="kpi"><div class="k">部署环境</div><div class="v">2</div><div class="s">staging / production</div></div>
-    <div class="kpi"><div class="k">验收</div><div class="v">97/97</div><div class="s">verify_project.py</div></div>
+    <div class="kpi"><div class="k">验收</div><div class="v">115/115</div><div class="s">verify_project.py</div></div>
   </div>
 
   <div class="table-scroll">
@@ -587,6 +587,70 @@ model_holder = ModelHolder()</code></pre>
 }</code></pre>
   </div>
 
+  <h3 class="req" style="border-left-color:var(--pass)">附：预测界面<span class="badge exceed">超出</span></h3>
+  <p>手册只要求一个应用，没有要求界面。但只有 JSON 接口时，使用者必须先记住七个字段的合法取值才能试一次预测——这让模型实际上不可用。因此加了一页表单。</p>
+
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>控件</th><th>作用</th><th>数据来源</th></tr></thead>
+      <tbody>
+        <tr><td><strong>年份</strong></td><td><code>year</code> 是信号最强的特征（重要性 0.43），跨全范围可让预测值变动约 1000</td><td>纯输入</td></tr>
+        <tr><td><strong>分组 Group</strong></td><td>选择序列所属的统计族（26 个），74% 的行会响应</td><td><code>GET /options</code></td></tr>
+        <tr><td><strong>商品 / 序列</strong></td><td>选了分组后自动收窄到该分组下真实存在的值（中位 11 个，而非全局 180 个）</td><td><code>/static/group_map.json</code></td></tr>
+        <tr><td>其余 6 个字段</td><td>折叠在「高级参数」里，按所选分组自动填好</td><td><code>group_map.json</code> 的 defaults</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout warn">
+    <strong>为什么 <code>month</code> 被移出主界面。</strong>
+    它的特征重要性只有 <strong>0.008</strong>。实测：把 <code>month</code> 在 3 / 6 / 9 / 12 之间切换，
+    <strong>预测值完全相同</strong>（<code>1093.5063417950016</code> 一字不差）；
+    对 300 个随机真实行做统计，中位影响为 <strong>0.00</strong>，只有 40.3% 的行会变化。
+    它之所以仍留在 API 契约里，是因为模型确实消费这个特征、缺了会 422；
+    但把它摆成主控件等于暗示一种它并不具备的影响力。因此降级到「高级参数」。
+  </div>
+
+  <div class="codeblock">
+    <div class="fname"><span>app/model_loader.py</span><span class="tag">类别从哪里来</span></div>
+<pre><code>def categories(self) -&gt; dict[str, list[str]]:
+    """返回模型训练时见过的类别取值。
+
+    从已拟合的 OneHotEncoder 读取，而不是从数据集读取。
+    这点对部署很关键：推理镜像刻意排除了 data/，运行环境里
+    根本没有 CSV 可读。而 encoder 的 categories_ 恰好就是
+    模型能编码的集合，也正是表单需要的东西。
+    """
+    if self._pipeline is None:
+        return {}
+
+    prep = getattr(self._pipeline, "named_steps", {}).get("prep")
+    if prep is None:
+        return {}
+
+    try:
+        encoder = prep.named_transformers_["cat"]
+        columns = prep.transformers_[0][2]
+        categories = encoder.categories_
+    except (AttributeError, KeyError, IndexError):
+        return {}
+
+    return {
+        str(column): sorted(str(value) for value in values)
+        # strict: 编码器为每个输入列存一份类别数组，
+        # 长度不一致说明管线结构与本方法的假设不符。
+        # 直接报错好过静默截断。
+        for column, values in zip(columns, categories, strict=True)
+    }</code></pre>
+  </div>
+
+  <div class="callout note">
+    <strong>为什么选项从模型读而不是从 CSV 读：</strong>
+    CI 构建的镜像里没有 <code>data/</code>（被 <code>.dockerignore</code> 排除）。
+    如果选项来自 CSV，容器里的表单会是空的。从 encoder 读则永远可用，
+    且与模型严格一致——不会出现"表单允许的值模型不认识"这种情形。
+  </div>
+
   <div class="callout good">
     <strong>模型是真实训练过的，不是占位符。</strong>
     用 <code>data/processed/clean_v2.csv</code> 对该产物重新评估，指标与文档逐位吻合：
@@ -730,9 +794,9 @@ def add_time_features(df: pd.DataFrame) -&gt; pd.DataFrame:
           <td>列重命名；删泄漏列；单位过滤；空 DataFrame；目标转数值；不可解析目标；NaN 与空串；5 种畸形 <code>Period</code>；幂等性</td></tr>
         <tr><td><code>tests/integration/test_model_loader.py</code></td><td class="num-cell">8</td>
           <td>模型文件缺失；未加载即预测；多行输入；未见类别；summary 有无；reload</td></tr>
-        <tr><td><code>tests/api/test_predict_api.py</code></td><td class="num-cell">25</td>
+        <tr><td><code>tests/api/test_predict_api.py</code></td><td class="num-cell">30</td>
           <td>健康检查；确定性；6 种非法载荷；9 个字段逐个缺失；空 body；未见类别；无模型时 503；OpenAPI</td></tr>
-        <tr style="background:#f1f4f9;font-weight:700"><td>合计</td><td class="num-cell">96</td><td>手册下限为 3</td></tr>
+        <tr style="background:#f1f4f9;font-weight:700"><td>合计</td><td class="num-cell">101</td><td>手册下限为 3</td></tr>
       </tbody>
     </table>
   </div>
@@ -799,7 +863,7 @@ def test_clean_is_idempotent_on_already_clean_data():
   </div>
 
 <pre><code>python -m pytest -q
-# 96 passed</code></pre>
+# 101 passed</code></pre>
 </section>
 
 <!-- ================= 04 PART 2 ================= -->
@@ -1050,7 +1114,7 @@ jobs:
     <table>
       <thead><tr><th>手册要求</th><th>工作流步骤</th><th>证据</th></tr></thead>
       <tbody>
-        <tr><td>跑完整测试套件</td><td><code>Run tests</code> → <code>pytest -q</code></td><td>Actions 日志 <code>96 passed</code></td></tr>
+        <tr><td>跑完整测试套件</td><td><code>Run tests</code> → <code>pytest -q</code></td><td>Actions 日志 <code>101 passed</code></td></tr>
         <tr><td>静态分析</td><td><code>Lint</code> → <code>ruff check</code></td><td><code>All checks passed!</code></td></tr>
         <tr><td>格式化检查</td><td><code>Check formatting</code></td><td><code>16 files already formatted</code></td></tr>
         <tr><td>构建 Docker 镜像</td><td><code>Build Docker image</code></td><td>每次运行均成功</td></tr>
@@ -1537,7 +1601,7 @@ summary = {
 
 <pre><code>python scripts/verify_project.py</code></pre>
 <pre><code>====================================================================
-97/97 checks passed
+115/115 checks passed
 PROJECT COMPLETE</code></pre>
 
   <div class="card">
@@ -1595,7 +1659,7 @@ PROJECT COMPLETE</code></pre>
         <tr><td>5</td><td><code>ml/data_pipeline.py</code> 零测试覆盖 —— 数据清洗逻辑完全未测</td><td><span class="badge gap">高</span></td><td>新增 <code>tests/unit/test_data_pipeline.py</code>，31 个测试</td></tr>
         <tr><td>6</td><td>CI 的 ruff 不覆盖 <code>scripts/</code>，与本地检查范围不一致</td><td><span class="badge deviate">低</span></td><td>两侧统一为 <code>app ml tests scripts</code></td></tr>
         <tr><td>7</td><td><code>to_frame()</code> 的 docstring 称"列顺序很重要"，但 <code>ColumnTransformer</code> 按列名选择</td><td><span class="badge deviate">低</span></td><td>修正描述</td></tr>
-        <tr><td>8</td><td>README 记录 65 个测试，实际已增至 96</td><td><span class="badge deviate">低</span></td><td>更新数字并补测试表行</td></tr>
+        <tr><td>8</td><td>README 记录 65 个测试，实际已增至 101</td><td><span class="badge deviate">低</span></td><td>更新数字并补测试表行</td></tr>
         <tr><td>9</td><td><code>/health</code> 的 <code>model_type</code> 显示 <code>Pipeline</code> 而非具体估计器</td><td><span class="badge deviate">中</span></td><td>从 <code>named_steps</code> 末项取类名</td></tr>
         <tr><td>10</td><td><code>model loaded</code> 日志从未输出（uvicorn 不配置应用 logger）</td><td><span class="badge deviate">中</span></td><td>为该模块 logger 显式挂 <code>StreamHandler</code></td></tr>
         <tr><td>11</td><td>测试把可选字段当作必填，3 个用例误判为应返回 422</td><td><span class="badge deviate">中</span></td><td>拆分为必填 / 可选两组断言</td></tr>
@@ -2187,7 +2251,7 @@ The system cannot find the file specified.</code></pre>
 
   <div class="qa-group">
     <details class="qa">
-      <summary>你说 96 个测试"超出要求"，但数量多就代表质量好吗？</summary>
+      <summary>你说 101 个测试"超出要求"，但数量多就代表质量好吗？</summary>
       <div class="qa-body">
         <p>不能直接等同，所以我更愿意强调<strong>覆盖了哪些边界</strong>，而不是数字。</p>
         <p>具体看：<code>test_schemas.py</code> 的 32 个不是"把同一个正常用例重复 32 次"，而是围绕 <code>year</code>、<code>month</code>、9 个字段、多余字段、错误类型这些<strong>不同的失败模式</strong>各写一组参数化用例。</p>
@@ -2254,7 +2318,7 @@ The system cannot find the file specified.</code></pre>
       <summary>为什么两轮审计都在同一份"验收脚本"上翻车？这说明什么？</summary>
       <div class="qa-body">
         <p>因为它<strong>是唯一没有测试覆盖的代码</strong>。</p>
-        <p>应用有 96 个测试，但 <code>scripts/verify_project.py</code> 只有它自己——而没有测试去验证"验证器本身是否正确"。这是经典的 <em>quis custodiet</em> 问题。</p>
+        <p>应用有 101 个测试，但 <code>scripts/verify_project.py</code> 只有它自己——而没有测试去验证"验证器本身是否正确"。这是经典的 <em>quis custodiet</em> 问题。</p>
         <p>三次失败的性质：</p>
         <ul>
           <li>GBK 解码崩溃 → 异常在子线程里被吞，检查<strong>假通过</strong></li>
@@ -2321,7 +2385,7 @@ The system cannot find the file specified.</code></pre>
     </details>
 
     <details class="qa">
-      <summary>如果 CI 里 96 个测试要跑很久，怎么办？</summary>
+      <summary>如果 CI 里 101 个测试要跑很久，怎么办？</summary>
       <div class="qa-body">
         <p>当前实测整个 CI 约 57 秒，其中测试本身只占很小一部分——<strong>瓶颈是 pip install 和 docker build</strong>，不是测试。所以优化方向应该按收益排序：</p>
         <div class="table-scroll" style="margin:10px 0">
@@ -2330,7 +2394,7 @@ The system cannot find the file specified.</code></pre>
             <tbody>
               <tr><td><code>setup-python</code> 的 <code>cache: pip</code>（已启用）</td><td>依赖缓存，重复构建省约 20 秒</td><td>已做</td></tr>
               <tr><td>Docker 层缓存（<code>buildx</code> + <code>cache-from/to: gha</code>）</td><td>CI 的 docker build 从约 36 秒降到几秒</td><td>需要 <code>docker/setup-buildx-action</code></td></tr>
-              <tr><td>测试并行化（<code>pytest-xdist</code>）</td><td>96 个测试本就不慢，收益有限</td><td>增加依赖</td></tr>
+              <tr><td>测试并行化（<code>pytest-xdist</code>）</td><td>101 个测试本就不慢，收益有限</td><td>增加依赖</td></tr>
             </tbody>
           </table>
         </div>
