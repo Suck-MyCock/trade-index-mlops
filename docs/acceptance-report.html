@@ -231,7 +231,7 @@ footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);color:v
     <span class="meta-pill">Suck-MyCock/trade-index-mlops</span>
     <span class="meta-pill">main · staging · dev</span>
     <span class="meta-pill">96 tests</span>
-    <span class="meta-pill">验收 96/96</span>
+    <span class="meta-pill">验收 97/97</span>
   </div>
 </header>
 
@@ -248,7 +248,7 @@ footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);color:v
     <div class="kpi"><div class="k">数据版本</div><div class="v">2</div><div class="s">v1 / v2</div></div>
     <div class="kpi"><div class="k">实验</div><div class="v">2</div><div class="s">基线 / 调优</div></div>
     <div class="kpi"><div class="k">部署环境</div><div class="v">2</div><div class="s">staging / production</div></div>
-    <div class="kpi"><div class="k">验收</div><div class="v">96/96</div><div class="s">verify_project.py</div></div>
+    <div class="kpi"><div class="k">验收</div><div class="v">97/97</div><div class="s">verify_project.py</div></div>
   </div>
 
   <div class="table-scroll">
@@ -1209,7 +1209,9 @@ dvc status --cloud
   <div class="codeblock">
     <div class="fname"><span>.dvc/config.local</span><span class="tag">被 gitignore · 含 SAS 令牌</span></div>
 <pre><code>['remote "myazure"']
-    sas_token = sp=racwdl&amp;st=...&amp;se=2026-12-12&amp;sig=...   # 141 字符</code></pre>
+    # 结构：sp=&lt;权限&gt;&amp;st=&lt;起始&gt;&amp;se=&lt;到期&gt;&amp;sig=&lt;签名&gt;
+    # 实际值 141 字符，仅存在于本文件，从未进入仓库
+    sas_token = &lt;已省略&gt;</code></pre>
   </div>
 
   <div class="callout risk">
@@ -1535,7 +1537,7 @@ summary = {
 
 <pre><code>python scripts/verify_project.py</code></pre>
 <pre><code>====================================================================
-96/96 checks passed
+97/97 checks passed
 PROJECT COMPLETE</code></pre>
 
   <div class="card">
@@ -1547,7 +1549,7 @@ PROJECT COMPLETE</code></pre>
     <div class="check-line"><span class="ok">✓</span> 5. CD —— 两个环境、.env 生成、按分支条件</div>
     <div class="check-line"><span class="ok">✓</span> 6. DVC —— 远端配置、两个指针、标签、config.local 忽略</div>
     <div class="check-line"><span class="ok">✓</span> 7. 文档 —— 六份文档及其关键内容</div>
-    <div class="check-line"><span class="ok">✓</span> 8. Git 卫生 —— 分支存在、无令牌泄漏、config.local 未跟踪</div>
+    <div class="check-line"><span class="ok">✓</span> 8. Git 卫生 —— 分支存在、无令牌泄漏（<strong>含历史扫描</strong>）、config.local 未跟踪</div>
   </div>
 </section>
 
@@ -1588,7 +1590,7 @@ PROJECT COMPLETE</code></pre>
       <tbody>
         <tr><td>1</td><td><code>subprocess.run(text=True)</code> 用 GBK 解码 git 输出，抛 <code>UnicodeDecodeError</code>，导致密钥扫描<strong>假通过</strong></td><td><span class="badge gap">高</span></td><td>固定 UTF-8 + <code>errors="replace"</code></td></tr>
         <tr><td>2</td><td>密钥扫描用 <code>git log -p --all</code>，会流式输出 15 MB 二进制 diff，慢且无信号</td><td><span class="badge deviate">中</span></td><td>改为遍历 <code>git ls-files</code> 逐个读文本文件</td></tr>
-        <tr><td>3</td><td>改进后的扫描把脚本自身的正则字面量 <code>sp=racwdl</code> 判为泄漏</td><td><span class="badge deviate">中</span></td><td>排除脚本自身</td></tr>
+        <tr><td>3</td><td>改进后的扫描把脚本自身的令牌正则字面量判为泄漏（自检出）</td><td><span class="badge deviate">中</span></td><td>排除脚本自身</td></tr>
         <tr><td>4</td><td>验收脚本用 <code>/</code> 比较路径，而 Windows 返回 <code>\</code>，4 项检查假失败</td><td><span class="badge deviate">中</span></td><td>改用 <code>Path.as_posix()</code></td></tr>
         <tr><td>5</td><td><code>ml/data_pipeline.py</code> 零测试覆盖 —— 数据清洗逻辑完全未测</td><td><span class="badge gap">高</span></td><td>新增 <code>tests/unit/test_data_pipeline.py</code>，31 个测试</td></tr>
         <tr><td>6</td><td>CI 的 ruff 不覆盖 <code>scripts/</code>，与本地检查范围不一致</td><td><span class="badge deviate">低</span></td><td>两侧统一为 <code>app ml tests scripts</code></td></tr>
@@ -1597,8 +1599,17 @@ PROJECT COMPLETE</code></pre>
         <tr><td>9</td><td><code>/health</code> 的 <code>model_type</code> 显示 <code>Pipeline</code> 而非具体估计器</td><td><span class="badge deviate">中</span></td><td>从 <code>named_steps</code> 末项取类名</td></tr>
         <tr><td>10</td><td><code>model loaded</code> 日志从未输出（uvicorn 不配置应用 logger）</td><td><span class="badge deviate">中</span></td><td>为该模块 logger 显式挂 <code>StreamHandler</code></td></tr>
         <tr><td>11</td><td>测试把可选字段当作必填，3 个用例误判为应返回 422</td><td><span class="badge deviate">中</span></td><td>拆分为必填 / 可选两组断言</td></tr>
+        <tr><td>12</td><td>本文档早期版本原样展示了 SAS 令牌结构，被扫描器判为泄漏</td><td><span class="badge gap">高</span></td><td>改为结构化占位描述；同时新增 <strong>git 历史扫描</strong>（<code>-G</code> 正则匹配签名特征），堵住"提交后删除则查不到"的缺口</td></tr>
       </tbody>
     </table>
+  </div>
+
+  <div class="callout note">
+    <strong>第 12 条值得单独说明。</strong>
+    它暴露的不只是文档问题，更是一个方法论缺口：工作区扫描看不到"曾经提交、后来删除"的凭据。
+    补上的历史扫描刻意<strong>只匹配签名部分</strong>（<code>sig=</code> 加 20 个以上字符），
+    而非权限前缀——因为前缀本身不是秘密，而"只描述令牌格式"的文档不应被永久误报。
+    该检查用三项对照实验验证过：正向对照能命中已知字符串、负向对照不误报、真实假令牌能被捕获。
   </div>
 </section>
 
@@ -2290,7 +2301,7 @@ The system cannot find the file specified.</code></pre>
         <ol class="steps">
           <li><strong>gitignore 生效</strong>：<code>git check-ignore -v .dvc/config.local</code> 会输出匹配到的规则行。这证明它被规则命中。</li>
           <li><strong>不在索引里</strong>：<code>git ls-files | grep config.local</code> 无输出。这证明它从未被 <code>git add</code>。</li>
-          <li><strong>全仓库扫描</strong>：<code>scripts/verify_project.py</code> 遍历每一个被跟踪的文本文件，用正则 <code>sp=racwdl|sig=[A-Za-z0-9%]{20,}</code> 搜索 SAS 令牌特征，结果为空。</li>
+          <li><strong>全仓库扫描</strong>：<code>scripts/verify_project.py</code> 遍历每一个被跟踪的文本文件，用"SAS 权限前缀 + 签名特征"两个正则搜索令牌形状的字符串，结果为空。</li>
         </ol>
         <p><strong>这里踩过一个坑</strong>：最初我用 <code>git log -p --all</code> 做扫描，结果因为 <code>subprocess</code> 用 GBK 解码抛 <code>UnicodeDecodeError</code>，异常在子线程被吞，检查<strong>假通过</strong>。修复后才真正有效——而且修复后的版本立刻抓到了一个真实命中（脚本自身的正则字面量），证明它确实在工作。</p>
         <p><strong>局限</strong>：这只检查了当前被跟踪的文件，没有扫描完整的历史提交（<code>git log -p --all</code> 那条约 15 MB 二进制 diff 的路径被我去掉了，因为它既慢又无有效信号）。如果要审计历史，应该用 <code>gitleaks</code> 或 <code>trufflehog</code> 这类专用工具。</p>
