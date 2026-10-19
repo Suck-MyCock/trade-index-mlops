@@ -283,10 +283,16 @@ python scripts/verify_project.py
 ```
 
 ```
-96/96 checks passed
+97/97 checks passed
 PROJECT COMPLETE
 ```
 
 The script checks the application, the tests, the Docker configuration, both
 workflows, the DVC setup, all six documents, and Git hygiene, then reports
 pass/fail per line. It is itself linted in CI, so it cannot rot silently.
+
+Git hygiene includes a **history scan**: a working-tree search cannot see a
+credential that was committed and later deleted, so the script also runs
+`git log --all -G 'sig=[A-Za-z0-9%]{20,}'`. Only the signature part is matched,
+not the permission prefix — the prefix is not itself secret, and a document that
+merely names the token format should not be flagged forever.

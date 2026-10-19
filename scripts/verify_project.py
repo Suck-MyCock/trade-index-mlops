@@ -240,6 +240,18 @@ for rel in sh("git", "ls-files").splitlines():
         leaked.append(rel)
 check(not leaked, "no SAS token in any tracked file", str(leaked[:3]))
 
+# A working-tree scan cannot see a credential that was committed and then
+# deleted. Search history too, but for the *signature* only: the permission
+# prefix is not itself secret, and documentation that names the token format
+# would otherwise be flagged forever. `-G` is a regex pickaxe; on this
+# repository it runs in well under a second.
+history_leak = sh("git", "log", "--all", "--oneline", "-G", r"sig=[A-Za-z0-9%]{20,}")
+check(
+    not history_leak,
+    "no SAS signature anywhere in git history",
+    history_leak.splitlines()[0] if history_leak else "",
+)
+
 check(
     ".dvc/config.local" not in sh("git", "ls-files"),
     "config.local is not tracked",
