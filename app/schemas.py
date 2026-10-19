@@ -53,10 +53,9 @@ class PredictRequest(BaseModel):
     def to_frame(self) -> pd.DataFrame:
         """Build a one-row DataFrame in the exact column order used in training.
 
-        Column order matters because the saved ``ColumnTransformer`` selects
-        columns by name; getting it wrong would raise at predict time rather
-        than produce a quiet wrong answer, but keeping it deterministic makes
-        the tests meaningful.
+        The saved ``ColumnTransformer`` selects columns **by name**, so the
+        order here does not affect correctness — but it is kept deterministic
+        so the tests can assert on it and a future change is visible in a diff.
         """
         return pd.DataFrame(
             [

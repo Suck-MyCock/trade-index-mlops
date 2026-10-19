@@ -40,12 +40,13 @@ jobs:
           python -m pip install -r requirements-dev.txt
 
       # Check 1 of 3: static analysis. Runs before the tests so an obvious
-      # syntax or import problem fails fast.
+      # syntax or import problem fails fast. `scripts/` is included so the
+      # acceptance checker is held to the same standard as the application.
       - name: Lint
-        run: python -m ruff check app ml tests
+        run: python -m ruff check app ml tests scripts
 
       - name: Check formatting
-        run: python -m ruff format --check app ml tests
+        run: python -m ruff format --check app ml tests scripts
 
       # Check 2 of 3: the full test suite.
       - name: Run tests

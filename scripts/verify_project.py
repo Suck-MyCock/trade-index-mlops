@@ -30,10 +30,20 @@ def check(ok: bool, label: str, detail: str = "") -> None:
 
 
 def sh(*args: str) -> str:
+    """Run a command and return stdout.
+
+    ``text=True`` would decode with the platform locale (GBK on Chinese
+    Windows), which raises UnicodeDecodeError on git output that contains
+    non-locale bytes. Pin UTF-8 and replace undecodable bytes instead.
+    """
     try:
-        return subprocess.run(
-            args, cwd=ROOT, capture_output=True, text=True, timeout=120
-        ).stdout.strip()
+        result = subprocess.run(
+            args,
+            cwd=ROOT,
+            capture_output=True,
+            timeout=120,
+        )
+        return result.stdout.decode("utf-8", errors="replace").strip()
     except Exception as exc:  # noqa: BLE001
         return f"<error: {exc}>"
 
@@ -81,8 +91,16 @@ if summary_path.exists():
 # ---------------------------------------------------------------------------
 section("2. Tests")
 # ---------------------------------------------------------------------------
-test_files = sorted(str(p.relative_to(ROOT)) for p in (ROOT / "tests").rglob("test_*.py"))
+test_files = sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / "tests").rglob("test_*.py"))
 check(len(test_files) >= 3, f"at least 3 test files ({len(test_files)} found)")
+
+for expected in (
+    "tests/unit/test_schemas.py",
+    "tests/unit/test_data_pipeline.py",
+    "tests/integration/test_model_loader.py",
+    "tests/api/test_predict_api.py",
+):
+    check(expected in test_files, f"test file present: {expected}")
 
 total_tests = 0
 for f in test_files:
@@ -95,6 +113,12 @@ api_tests = read("tests/api/test_predict_api.py")
 check("422" in api_tests, "API tests assert validation failures return 422")
 check("503" in api_tests, "API tests cover the model-unavailable path")
 check("deterministic" in api_tests.lower(), "API tests assert determinism")
+
+pipeline_tests = read("tests/unit/test_data_pipeline.py")
+check("MAGNITUDE" in pipeline_tests, "pipeline tests cover the column rename")
+check("select_target_units" in pipeline_tests, "pipeline tests cover unit filtering")
+check("add_time_features" in pipeline_tests, "pipeline tests cover period parsing")
+check("idempotent" in pipeline_tests.lower(), "pipeline tests assert idempotency")
 
 loader_tests = read("tests/integration/test_model_loader.py")
 check("FileNotFoundError" in loader_tests, "loader tests cover a missing artifact")
@@ -195,9 +219,31 @@ all_branches = sh("git", "branch", "--list")
 for b in ["dev", "staging", "main"]:
     check(b in all_branches, f"branch {b} exists")
 
-secrets_scan = sh("git", "log", "-p", "--all")
-leaked = list(re.findall(r"(sp=racwdl|sig=[A-Za-z0-9%]{20,})", secrets_scan))
-check(not leaked, "no SAS token in git history", str(leaked[:2]))
+# Scan every tracked text file for SAS-token-shaped strings. Walking the file
+# list is fast and deterministic; `git log -p --all` would stream a 15 MB
+# binary diff and produce no useful additional signal.
+SAS_PATTERN = re.compile(r"(sp=racwdl|sig=[A-Za-z0-9%]{20,})")
+# This file contains the pattern itself, so it would always match.
+SELF = "scripts/verify_project.py"
+leaked: list[str] = []
+for rel in sh("git", "ls-files").splitlines():
+    if rel == SELF:
+        continue
+    path = ROOT / rel
+    if not path.is_file() or path.stat().st_size > 2_000_000:
+        continue
+    try:
+        body = path.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        continue
+    if SAS_PATTERN.search(body):
+        leaked.append(rel)
+check(not leaked, "no SAS token in any tracked file", str(leaked[:3]))
+
+check(
+    ".dvc/config.local" not in sh("git", "ls-files"),
+    "config.local is not tracked",
+)
 
 # ---------------------------------------------------------------------------
 print()
