@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Data
+data/raw/
+*.csv
+!data/**/*.dvc
+.dvc/cache/
+.dvc/tmp/
+
+# Secrets
+.env
+.env.*
+!.env.example
+.dvc/config.local
+
+# MLflow
+mlruns/
+mlartifacts/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
