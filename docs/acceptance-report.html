@@ -1,0 +1,2396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目验收说明 · 手册要求 ↔ 实现逐条对照</title>
+<style>
+:root{
+  --bg:#f7f8fa;--panel:#fff;--ink:#1a1f2b;--ink-2:#4a5568;--ink-3:#718096;
+  --line:#e3e8ef;--accent:#1f5fd0;--accent-soft:#eaf1fd;
+  --pass:#0f7b46;--pass-soft:#e6f6ee;--warn:#9a6700;--warn-soft:#fdf6e3;
+  --risk:#b42318;--risk-soft:#fdecea;--code-bg:#0f172a;--code-ink:#e2e8f0;
+  --radius:10px;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+  font-size:15px;line-height:1.75;-webkit-font-smoothing:antialiased}
+.wrap{display:flex;max-width:1440px;margin:0 auto;align-items:flex-start}
+
+/* sidebar */
+.toc{position:sticky;top:0;flex:0 0 270px;height:100vh;overflow-y:auto;
+  padding:26px 16px 40px 24px;border-right:1px solid var(--line);background:var(--panel);font-size:13.5px}
+.toc h2{margin:0 0 12px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.toc h2.gap{margin-top:18px}
+.toc ol{list-style:none;margin:0;padding:0}
+.toc a{display:block;padding:5px 10px;color:var(--ink-2);text-decoration:none;border-radius:6px;
+  border-left:2px solid transparent;transition:.12s}
+.toc a:hover{background:var(--accent-soft);color:var(--accent)}
+.toc a.sub{padding-left:22px;font-size:12.5px;color:var(--ink-3)}
+.toc a.active{background:var(--accent-soft);color:var(--accent);border-left-color:var(--accent);font-weight:600}
+
+main{flex:1 1 auto;min-width:0;padding:0 44px 120px}
+
+header.hero{padding:54px 0 32px;border-bottom:1px solid var(--line);margin-bottom:10px}
+.eyebrow{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 10px}
+header.hero h1{margin:0 0 14px;font-size:34px;line-height:1.3;letter-spacing:-.01em;font-weight:750}
+header.hero p.lede{margin:0;color:var(--ink-2);font-size:16px;max-width:76ch}
+.meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.meta-pill{font-family:var(--mono);font-size:12px;background:#fff;border:1px solid var(--line);
+  border-radius:999px;padding:4px 12px;color:var(--ink-2)}
+
+section{padding-top:42px;scroll-margin-top:16px}
+section > h2{font-size:24px;margin:0 0 6px;font-weight:700;letter-spacing:-.01em;
+  padding-bottom:10px;border-bottom:2px solid var(--ink)}
+section > h2 .num{font-family:var(--mono);font-size:14px;color:var(--accent);
+  background:var(--accent-soft);border-radius:6px;padding:2px 8px;margin-right:10px;vertical-align:2px}
+section > p.section-lede{color:var(--ink-2);margin:0 0 22px;max-width:80ch}
+
+h3.req{font-size:17.5px;margin:36px 0 12px;padding-left:12px;border-left:3px solid var(--accent);
+  font-weight:700;line-height:1.5;scroll-margin-top:16px}
+h3.req .rid{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);margin-right:8px;font-weight:600}
+
+.badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.03em;padding:2px 9px;
+  border-radius:999px;vertical-align:2px;margin-left:8px;white-space:nowrap}
+.badge.pass{background:var(--pass-soft);color:var(--pass);border:1px solid #bfe6d2}
+.badge.exceed{background:var(--accent-soft);color:var(--accent);border:1px solid #c4d8fb}
+.badge.deviate{background:var(--warn-soft);color:var(--warn);border:1px solid #f0dfa8}
+.badge.gap{background:var(--risk-soft);color:var(--risk);border:1px solid #f5c9c4}
+
+blockquote.brief{margin:0 0 16px;padding:14px 18px;background:var(--panel);border:1px solid var(--line);
+  border-left:3px solid var(--ink-3);border-radius:0 var(--radius) var(--radius) 0;color:var(--ink-2);font-size:14.5px}
+blockquote.brief .label{display:block;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:700;margin-bottom:6px}
+blockquote.brief em{font-style:normal;color:var(--ink);background:#fff8dc;padding:0 3px;border-radius:3px}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin:0 0 16px}
+.card > :first-child{margin-top:0}
+.card > :last-child{margin-bottom:0}
+.card h4{margin:0 0 10px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:700}
+
+.table-scroll{overflow-x:auto;margin:0 0 16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+thead th{text-align:left;padding:10px 14px;background:#f1f4f9;font-size:11.5px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink-2);font-weight:700;white-space:nowrap;border-bottom:1px solid var(--line)}
+tbody td{padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fbfcfe}
+td code,th code{font-size:12.5px}
+.num-cell{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+
+code{font-family:var(--mono);font-size:.88em;background:#eef1f6;color:#243b53;
+  padding:1.5px 5px;border-radius:4px;word-break:break-word}
+
+/* code block with filename */
+.codeblock{margin:0 0 18px;border-radius:var(--radius);overflow:hidden;border:1px solid #1e293b}
+.codeblock .fname{background:#1e293b;color:#94a3b8;font-family:var(--mono);font-size:11.5px;
+  padding:7px 14px;border-bottom:1px solid #334155;display:flex;justify-content:space-between;align-items:center}
+.codeblock .fname .tag{color:#64748b;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase}
+.codeblock pre{position:relative;margin:0;background:var(--code-bg);color:var(--code-ink);
+  padding:16px 18px;overflow-x:auto;font-size:12.8px;line-height:1.7;border-radius:0}
+pre{position:relative;margin:0 0 16px;background:var(--code-bg);color:var(--code-ink);
+  border-radius:var(--radius);padding:16px 18px;overflow-x:auto;font-size:12.8px;line-height:1.7}
+pre code{background:none;color:inherit;padding:0;font-size:inherit;word-break:normal}
+.copy-btn{position:absolute;top:8px;right:8px;font-family:var(--mono);font-size:11px;
+  background:rgba(255,255,255,.12);color:#cbd5e1;border:1px solid rgba(255,255,255,.18);
+  border-radius:5px;padding:3px 9px;cursor:pointer;transition:.12s}
+.copy-btn:hover{background:rgba(255,255,255,.22);color:#fff}
+.copy-btn.done{background:#1a7f4b;border-color:#1a7f4b;color:#fff}
+
+ul.plain{margin:0 0 16px;padding-left:20px}
+ul.plain li{margin:5px 0}
+ol.steps{margin:0 0 16px;padding-left:22px}
+ol.steps li{margin:7px 0}
+
+.callout{border-radius:var(--radius);padding:14px 18px;margin:0 0 16px;font-size:14.5px;border:1px solid}
+.callout.note{background:var(--accent-soft);border-color:#c9dcfb;color:#173e8a}
+.callout.good{background:var(--pass-soft);border-color:#bfe6d2;color:#0b5c34}
+.callout.warn{background:var(--warn-soft);border-color:#f0dfa8;color:#7a5200}
+.callout.risk{background:var(--risk-soft);border-color:#f5c9c4;color:#8a1c14}
+.callout strong{font-weight:700}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px;margin:0 0 20px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px}
+.kpi .k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:700}
+.kpi .v{font-family:var(--mono);font-size:21px;font-weight:700;margin-top:4px;letter-spacing:-.02em}
+.kpi .s{font-size:12px;color:var(--ink-3);margin-top:2px}
+.kpi.accent .v{color:var(--accent)}
+
+.check-line{font-family:var(--mono);font-size:13px;padding:3px 0;color:var(--ink-2)}
+.check-line .ok{color:var(--pass);font-weight:700}
+
+/* architecture diagram */
+.arch{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px 24px;margin:0 0 18px;overflow-x:auto}
+.arch pre{background:none;color:var(--ink-2);padding:0;margin:0;font-size:12.3px;line-height:1.55}
+.arch pre code{background:none;color:inherit}
+
+/* Q&A */
+.qa-group{margin:0 0 26px}
+.qa-group > h3{font-size:16px;margin:0 0 12px;color:var(--accent);font-weight:700;
+  padding-bottom:6px;border-bottom:1px solid var(--line)}
+details.qa{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  margin:0 0 10px;overflow:hidden}
+details.qa[open]{border-color:#c4d8fb;box-shadow:0 1px 3px rgba(31,95,208,.08)}
+details.qa summary{padding:13px 18px;cursor:pointer;font-weight:600;font-size:14.5px;
+  list-style:none;display:flex;gap:10px;align-items:flex-start;color:var(--ink)}
+details.qa summary::-webkit-details-marker{display:none}
+details.qa summary::before{content:"Q";flex:0 0 auto;font-family:var(--mono);font-size:11px;
+  font-weight:700;color:#fff;background:var(--accent);border-radius:4px;
+  padding:1px 6px;margin-top:4px;line-height:1.4}
+details.qa summary:hover{background:#fafbfd}
+details.qa[open] summary{background:#f4f8ff;border-bottom:1px solid var(--line)}
+.qa-body{padding:14px 18px 16px 46px;color:var(--ink-2);font-size:14.5px}
+.qa-body > :first-child{margin-top:0}
+.qa-body > :last-child{margin-bottom:0}
+.qa-body ul{margin:0 0 10px;padding-left:20px}
+.qa-body li{margin:4px 0}
+.qa-body strong{color:var(--ink)}
+.qa-ref{display:inline-block;font-family:var(--mono);font-size:11.5px;color:var(--ink-3);
+  background:#f1f4f9;border-radius:4px;padding:1px 7px;margin-top:4px}
+.qa-body pre{font-size:12px;padding:12px 14px;margin:10px 0}
+.qa-body .codeblock{margin:10px 0}
+
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);color:var(--ink-3);font-size:13px}
+
+@media (max-width:1000px){
+  .wrap{display:block}
+  .toc{position:static;height:auto;flex:none;border-right:none;border-bottom:1px solid var(--line)}
+  main{padding:0 20px 90px}
+  header.hero h1{font-size:26px}
+  .qa-body{padding-left:18px}
+}
+@media print{
+  .toc,.copy-btn{display:none}
+  main{padding:0}
+  section{page-break-inside:avoid}
+  details.qa{page-break-inside:avoid}
+  details.qa > .qa-body{display:block !important}
+  details.qa{open:true}
+  pre{background:#f4f6f9;color:#111;border:1px solid #ddd}
+  .codeblock .fname{background:#e8ecf2;color:#333}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<nav class="toc" aria-label="目录">
+  <h2>正文</h2>
+  <ol>
+    <li><a href="#overview">00 项目概览</a></li>
+    <li><a href="#summary">01 综述</a></li>
+    <li><a href="#legend">02 徽章说明</a></li>
+    <li><a href="#part1">03 The App</a></li>
+    <li><a href="#r1-1" class="sub">R1.1 应用与模型</a></li>
+    <li><a href="#r1-2" class="sub">R1.2 多版本数据集</a></li>
+    <li><a href="#r1-3" class="sub">R1.3 测试套件</a></li>
+    <li><a href="#part2">04 DevOps</a></li>
+    <li><a href="#r2-1" class="sub">R2.1–R2.2 版本控制与分支</a></li>
+    <li><a href="#r2-3" class="sub">R2.3 Docker</a></li>
+    <li><a href="#r2-4" class="sub">R2.4–R2.6 CI 三项</a></li>
+    <li><a href="#r2-7" class="sub">R2.7 分支保护</a></li>
+    <li><a href="#r2-8" class="sub">R2.8 自动部署</a></li>
+    <li><a href="#r2-9" class="sub">R2.9 文档</a></li>
+    <li><a href="#part3">05 MLOps</a></li>
+    <li><a href="#r3-1" class="sub">R3.1–R3.2 DVC 与远端</a></li>
+    <li><a href="#r3-3" class="sub">R3.3 两个数据版本</a></li>
+    <li><a href="#r3-4" class="sub">R3.4 数据文档</a></li>
+    <li><a href="#r3-5" class="sub">R3.5 原始数据不入库</a></li>
+    <li><a href="#r3-6" class="sub">R3.6 MLflow 五类记录</a></li>
+    <li><a href="#r3-7" class="sub">R3.7–R3.8 实验与论证</a></li>
+    <li><a href="#part4">06 仓库结构对照</a></li>
+    <li><a href="#part5">07 评分交付物</a></li>
+    <li><a href="#verify">08 一键验收</a></li>
+    <li><a href="#gaps">09 已知偏离与局限</a></li>
+    <li><a href="#audit">10 审计记录</a></li>
+  </ol>
+  <h2 class="gap">答辩问答</h2>
+  <ol>
+    <li><a href="#qa-concept">11 概念与选型</a></li>
+    <li><a href="#qa-code">12 代码实现</a></li>
+    <li><a href="#qa-ops">13 操作与运维</a></li>
+    <li><a href="#qa-trap">14 边界与故障</a></li>
+    <li><a href="#qa-challenge">15 追问与反思</a></li>
+  </ol>
+</nav>
+
+<main>
+
+<header class="hero">
+  <p class="eyebrow">交付验收说明</p>
+  <h1>trade-index-mlops<br>手册要求 ↔ 实现逐条对照</h1>
+  <p class="lede">
+    本文把课程手册中的每一条要求映射到仓库里的具体实现，附上真实代码、可复现的验证命令，
+    并在最后给出答辩问答参考。每一条都可以在不阅读全部代码的前提下独立核对。
+  </p>
+  <div class="meta-row">
+    <span class="meta-pill">Suck-MyCock/trade-index-mlops</span>
+    <span class="meta-pill">main · staging · dev</span>
+    <span class="meta-pill">96 tests</span>
+    <span class="meta-pill">验收 96/96</span>
+  </div>
+</header>
+
+<!-- ================= 00 OVERVIEW ================= -->
+<section id="overview">
+  <h2><span class="num">00</span>项目概览</h2>
+  <p class="section-lede">一组可核对的数字，构成整份报告的事实基础。</p>
+
+  <div class="kpi-grid">
+    <div class="kpi accent"><div class="k">模型 R²</div><div class="v">0.9085</div><div class="s">留出集，种子 42</div></div>
+    <div class="kpi"><div class="k">RMSE</div><div class="v">240.03</div><div class="s">基线 578.18</div></div>
+    <div class="kpi"><div class="k">测试</div><div class="v">96</div><div class="s">4 个文件</div></div>
+    <div class="kpi"><div class="k">镜像</div><div class="v">181 MB</div><div class="s">slim，非 root</div></div>
+    <div class="kpi"><div class="k">数据版本</div><div class="v">2</div><div class="s">v1 / v2</div></div>
+    <div class="kpi"><div class="k">实验</div><div class="v">2</div><div class="s">基线 / 调优</div></div>
+    <div class="kpi"><div class="k">部署环境</div><div class="v">2</div><div class="s">staging / production</div></div>
+    <div class="kpi"><div class="k">验收</div><div class="v">96/96</div><div class="s">verify_project.py</div></div>
+  </div>
+
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>项目</th><th>取值</th></tr></thead>
+      <tbody>
+        <tr><td>任务类型</td><td>回归 —— 预测单个贸易指数序列在某季度的 <code>Data_value</code></td></tr>
+        <tr><td>生产模型</td><td><code>RandomForestRegressor</code>（封装在 sklearn <code>Pipeline</code> 内）</td></tr>
+        <tr><td>训练数据</td><td>Stats NZ Overseas Trade Indexes，v2 清洗版 77,337 行</td></tr>
+        <tr><td>API</td><td>FastAPI，<code>GET /health</code> 与 <code>POST /predict</code></td></tr>
+        <tr><td>DVC 远端</td><td>Azure Blob，<code>azure://dvc</code>，账户 <code>wut2026</code></td></tr>
+        <tr><td>流水线</td><td><code>.github/workflows/ci.yml</code>、<code>cd.yml</code></td></tr>
+        <tr><td>文档</td><td>README · DEPLOYMENT · COMPLIANCE · ml/README_data · ml/README_experiments · ml/PROVENANCE · ml/registry/current_model</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= 01 SUMMARY ================= -->
+<section id="summary">
+  <h2><span class="num">01</span>综述</h2>
+  <p class="section-lede">
+    先说清楚整个项目在解决什么问题、为什么这样拆、每个技术选择承担什么职责。
+    后面各节是这个综述的展开与证据。
+  </p>
+
+  <h3 class="req" style="border-left-color:var(--ink)">问题定义</h3>
+  <p>
+    Stats NZ 每季度发布《Overseas Trade Indexes》，其中每一行是一个"序列 × 季度"的观测，
+    包含单位、状态、商品分组、价格类型等元数据，以及一个数值指标 <code>Data_value</code>。
+    本项目的任务是：<strong>给定某个序列的元数据和季度，预测它在该季度的指数数值</strong>。
+  </p>
+  <p>
+    这是一个<strong>回归</strong>问题，而非分类。业务上的意义是：当某个序列的当期数值尚未公布或缺失时，
+    可以用同等元数据的其他序列来估计它的合理区间，用于早期趋势判断。
+  </p>
+
+  <h3 class="req" style="border-left-color:var(--ink)">三个维度如何分工</h3>
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>维度</th><th>要解决的问题</th><th>本项目采用的手段</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>App</strong></td>
+          <td>模型如何变成别人能用的东西</td>
+          <td>FastAPI 服务 + pydantic 输入契约 + 启动时加载的一次性模型持有器</td>
+        </tr>
+        <tr>
+          <td><strong>DevOps</strong></td>
+          <td>代码如何可靠地变成可运行产物</td>
+          <td>分支策略 + 分支保护 + GitHub Actions CI（测试/lint/构建）+ CD（两环境镜像）</td>
+        </tr>
+        <tr>
+          <td><strong>MLOps</strong></td>
+          <td>模型与数据如何可追溯、可复现</td>
+          <td>DVC 管数据（Azure 远端）+ MLflow 管实验（五类记录）+ 产物与溯源文档</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="req" style="border-left-color:var(--ink)">端到端数据流</h3>
+  <div class="arch">
+<pre><code>  ┌──────────────────────────────────────────────────────────────────────┐
+  │  1. 数据层（MLOps — DVC）                                            │
+  │                                                                      │
+  │   Stats NZ CSV ──► data/raw/raw_dataset.csv          (v1, 104,613 行)│
+  │                        │  DVC 指向 Azure: azure://dvc                 │
+  │                        │  Git 只存 .dvc 指针（md5 + size）            │
+  │                        ▼                                             │
+  │   ml/data_pipeline.py   重命名 · 删泄漏列 · 归一单位 · 丢空目标       │
+  │                        │  过滤 UNITS=="Index" · 拆分 Period           │
+  │                        ▼                                             │
+  │   data/processed/clean_v2.csv                         (v2, 77,337 行)│
+  └────────────────────────┬─────────────────────────────────────────────┘
+                           │
+  ┌────────────────────────▼─────────────────────────────────────────────┐
+  │  2. 训练层（MLOps — MLflow）                                          │
+  │                                                                      │
+  │   ml/train.py   80/20 切分（random_state=42）                         │
+  │        │                                                             │
+  │        ├──► baseline-linear   LinearRegression   R²=0.4689           │
+  │        └──► tuned-forest      RandomForest(120)  R²=0.9085  ★        │
+  │                    │                                                 │
+  │                    ├──► MLflow run：git_commit · data_dvc_hash       │
+  │                    │                超参数 · 指标 · model.skops      │
+  │                    └──► models/model.joblib（joblib compress=3, 15 MB）│
+  │                         models/run_summary.json（提交 · 数据版本）    │
+  └────────────────────────┬─────────────────────────────────────────────┘
+                           │
+  ┌────────────────────────▼─────────────────────────────────────────────┐
+  │  3. 服务层（App）                                                     │
+  │                                                                      │
+  │   app/main.py        lifespan 启动时加载模型（只加载一次）            │
+  │        │                │                                            │
+  │        │                └── GET  /health   → 模型状态 + 环境标识      │
+  │        └── POST /predict → app/schemas.py 校验 → 预测 → 422/503 语义  │
+  └────────────────────────┬─────────────────────────────────────────────┘
+                           │
+  ┌────────────────────────▼─────────────────────────────────────────────┐
+  │  4. 交付层（DevOps）                                                  │
+  │                                                                      │
+  │   Dockerfile（python:3.12-slim · 非 root · 181 MB）                   │
+  │        │                                                             │
+  │        ├── CI（PR 到 dev/staging/main）                               │
+  │        │     ruff check → ruff format → pytest(96) → docker build     │
+  │        │     失败 ⇒ 分支保护拦截合并                                  │
+  │        │                                                             │
+  │        └── CD（合并后 push）                                          │
+  │              staging 分支 → environment: staging   → trade-index:staging    │
+  │              main    分支 → environment: production → trade-index:production │
+  └──────────────────────────────────────────────────────────────────────┘</code></pre>
+  </div>
+
+  <h3 class="req" style="border-left-color:var(--ink)">六个关键设计决策</h3>
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>决策</th><th>备选方案</th><th>选择理由</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>用 <code>RandomForestRegressor</code></td>
+          <td>线性回归 / 梯度提升</td>
+          <td>数据里绝大多数是类别型元数据，树模型天然处理非线性交互；线性基线的 R² 只有 0.47，明显欠拟合</td>
+        </tr>
+        <tr>
+          <td>只保留 <code>UNITS == "Index"</code> 的行</td>
+          <td>混合所有单位一起训练</td>
+          <td>不同单位的数值量纲完全不同（指数 vs 纽币 vs 百分比）。混在一起时模型会去学"单位"而不是"规律"，同一批特征会对应几百和几百万两种目标</td>
+        </tr>
+        <tr>
+          <td>模型产物提交进 Git</td>
+          <td>用 DVC 管 / 从 MLflow Registry 拉</td>
+          <td>CI 里没有训练数据（DVC 需要 Azure 凭据），也无法访问 MLflow 服务。把 15 MB 产物随仓库走，CI 才能构建出真正能服务的镜像</td>
+        </tr>
+        <tr>
+          <td>MLflow 用 <code>sqlite:///mlflow.db</code></td>
+          <td>默认的 <code>./mlruns</code> 文件后端</td>
+          <td>MLflow 3.x 已将文件后端标记为维护模式，<code>mlflow ui</code> 会直接拒绝启动</td>
+        </tr>
+        <tr>
+          <td>训练依赖与运行时依赖分离</td>
+          <td>一个 requirements.txt 全装</td>
+          <td>MLflow 及其传递依赖约 200 MB，推理时完全不需要。分离后镜像从约 400 MB 降到 181 MB</td>
+        </tr>
+        <tr>
+          <td>CD 用 build-arg 而非 <code>COPY .env</code></td>
+          <td>把生成的 .env 打进镜像</td>
+          <td>镜像层是不可变的，打进 .env 等于把配置（以及真实项目中的凭据）永久固化。改用构建参数，机制相同但无残留</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout note">
+    <strong>一句话概括：</strong>
+    这套项目的核心不是"把模型跑通"，而是让<strong>每次预测都能回答"它来自哪份数据、哪次训练、哪份代码、哪个环境"</strong>。
+    后面所有章节都在证明这句话。
+  </div>
+</section>
+
+<!-- ================= 02 LEGEND ================= -->
+<section id="legend">
+  <h2><span class="num">02</span>徽章说明</h2>
+  <div class="callout note">
+    <span class="badge pass">满足</span> 手册要求已被完整实现，并有可复现的证据。<br>
+    <span class="badge exceed">超出</span> 实现程度高于手册的最低要求。<br>
+    <span class="badge deviate">有意偏离</span> 与手册示例不同，但理由已记录、且手册允许。<br>
+    <span class="badge gap">缺口</span> 未满足或存在已知问题。
+  </div>
+</section>
+
+<!-- ================= 03 PART 1 ================= -->
+<section id="part1">
+  <h2><span class="num">03</span>The App</h2>
+  <p class="section-lede">手册第一部分：一个由机器学习驱动、具备真实模型的应用。</p>
+
+  <h3 class="req" id="r1-1"><span class="rid">R1.1</span>一个训练 / 微调过模型的应用<span class="badge pass">满足</span></h3>
+
+  <blockquote class="brief">
+    <span class="label">手册原文</span>
+    This project is about building a <em>machine-learning-powered app</em> using DevOps and MLOps.
+  </blockquote>
+
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>组件</th><th>文件</th><th>职责</th></tr></thead>
+      <tbody>
+        <tr><td>HTTP 服务</td><td><code>app/main.py</code></td><td><code>GET /health</code>、<code>POST /predict</code></td></tr>
+        <tr><td>输入契约</td><td><code>app/schemas.py</code></td><td>pydantic 约束，全部边界规则集中在此</td></tr>
+        <tr><td>模型加载</td><td><code>app/model_loader.py</code></td><td>启动时加载一次（lifespan），而非每请求</td></tr>
+        <tr><td>训练产物</td><td><code>models/model.joblib</code></td><td>14.6 MB，压缩后的 RandomForest 管线</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="codeblock">
+    <div class="fname"><span>app/main.py</span><span class="tag">服务入口 · 106 行</span></div>
+<pre><code># 模块级读取部署环境：CD 在生成 .env 时写入这个变量，
+# 因此运行中的容器能回答"我是为哪个环境构建的"
+APP_ENV = os.environ.get("APP_ENV", "local")
+
+# uvicorn 只配置自己的 logger，应用 logger 默认没有 handler，
+# 若不显式挂一个，下面的 logger.info 会被静默丢弃，`docker logs` 里看不到任何启动诊断
+logger = logging.getLogger(__name__)
+if not logger.handlers:
+    _handler = logging.StreamHandler()
+    _handler.setFormatter(
+        logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
+    )
+    logger.addHandler(_handler)
+    logger.setLevel(os.environ.get("LOG_LEVEL", "INFO").upper())
+
+
+@asynccontextmanager
+async def lifespan(application: FastAPI) -&gt; AsyncIterator[None]:
+    """在开始接收流量之前加载模型。
+
+    产物缺失时只记录日志而不让进程崩溃：服务仍能以
+    model_loaded=false 回答 /health，这比一个静默重启循环更容易诊断。
+    """
+    try:
+        model_holder.load()
+        logger.info(
+            "model loaded: type=%s data_version=%s",
+            model_holder.model_type,
+            model_holder.data_version,
+        )
+    except FileNotFoundError as exc:
+        logger.error("model artifact missing: %s", exc)
+    yield
+
+
+@app.get("/health", response_model=HealthResponse, tags=["ops"])
+def health() -&gt; HealthResponse:
+    """报告服务是否能够提供预测。"""
+    return HealthResponse(
+        status="ok",
+        environment=APP_ENV,
+        model_loaded=model_holder.is_loaded,
+        model_type=model_holder.model_type,
+        data_version=model_holder.data_version,
+    )
+
+
+@app.post("/predict", response_model=PredictResponse,
+          status_code=status.HTTP_200_OK, tags=["predict"])
+def predict(request: PredictRequest) -&gt; PredictResponse:
+    """为一个贸易指数观测打分。
+
+    模型不可用时返回 503，让调用方能区分
+    "服务活着但没就绪" 与 "你的请求非法"（后者框架会报 422）。
+    """
+    try:
+        prediction = model_holder.predict(request.to_frame())
+    except ModelNotLoadedError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="model is not loaded",
+        ) from exc
+
+    return PredictResponse(
+        prediction=prediction,
+        model_type=model_holder.model_type or "unknown",
+        data_version=model_holder.data_version or "unknown",
+    )</code></pre>
+  </div>
+
+  <div class="codeblock">
+    <div class="fname"><span>app/model_loader.py</span><span class="tag">单例持有器 · 112 行</span></div>
+<pre><code>def _estimator_name(pipeline) -&gt; str:
+    """返回具体估计器的类名，而非包装器的。
+
+    type(pipeline).__name__ 永远是 "Pipeline"，对调用方毫无信息量。
+    有用的名字是最后一个步骤的类名，这样健康检查才能报出
+    RandomForestRegressor。
+    """
+    steps = getattr(pipeline, "named_steps", None)
+    if steps:
+        last = list(steps.values())[-1]
+        return type(last).__name__
+    return type(pipeline).__name__
+
+
+class ModelHolder:
+    """持有已拟合的 sklearn 管线及其溯源元数据。"""
+
+    def load(self, model_path=DEFAULT_MODEL_PATH,
+             summary_path=DEFAULT_SUMMARY_PATH) -&gt; None:
+        """从磁盘加载管线。
+
+        抛出带可操作提示的 FileNotFoundError，而不是让裸的 joblib
+        异常逃逸：产物缺失是运维问题，不是服务 bug。
+        """
+        path = Path(model_path)
+        if not path.exists():
+            raise FileNotFoundError(
+                f"model artifact not found at {path}. "
+                "Run `python -m ml.train` to create it."
+            )
+
+        self._pipeline = joblib.load(path)
+        self._model_type = _estimator_name(self._pipeline)
+        self._data_version = None
+
+        if summary_path is not None:
+            summary = Path(summary_path)
+            if summary.exists():
+                meta = json.loads(summary.read_text(encoding="utf-8"))
+                self._model_type = meta.get("model_type") or self._model_type
+                self._data_version = meta.get("data_version")
+
+    def predict(self, frame: pd.DataFrame) -&gt; float:
+        """为单行特征表打分并返回预测值。"""
+        if self._pipeline is None:
+            raise ModelNotLoadedError("model is not loaded")
+
+        if len(frame) != 1:
+            raise ValueError(f"expected exactly 1 row, got {len(frame)}")
+
+        return float(self._pipeline.predict(frame)[0])
+
+
+# 模块级单例，供 API 使用；测试可通过 .reload() 指向别的产物
+model_holder = ModelHolder()</code></pre>
+  </div>
+
+  <div class="card">
+    <h4>证据</h4>
+<pre><code>GET /health
+{
+  "status": "ok",
+  "environment": "local",
+  "model_loaded": true,
+  "model_type": "RandomForestRegressor",
+  "data_version": "v2"
+}</code></pre>
+  </div>
+
+  <div class="callout good">
+    <strong>模型是真实训练过的，不是占位符。</strong>
+    用 <code>data/processed/clean_v2.csv</code> 对该产物重新评估，指标与文档逐位吻合：
+    RMSE 240.0274 / MAE 154.4691 / R² 0.9085。同一输入两次预测结果完全相同。
+  </div>
+
+  <h3 class="req" id="r1-2"><span class="rid">R1.2</span>数据集，可有多个版本<span class="badge pass">满足</span></h3>
+
+  <blockquote class="brief">
+    <span class="label">手册原文</span>
+    <em>a dataset ready</em>, and potentially <em>multiple versions</em>.
+  </blockquote>
+
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>版本</th><th>文件</th><th class="num-cell">行数</th><th>DVC hash</th></tr></thead>
+      <tbody>
+        <tr><td>v1 原始</td><td><code>data/raw/raw_dataset.csv</code></td><td class="num-cell">104,613</td><td><code>42171ec9…</code></td></tr>
+        <tr><td>v2 清洗</td><td><code>data/processed/clean_v2.csv</code></td><td class="num-cell">77,337</td><td><code>a0f682da…</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="codeblock">
+    <div class="fname"><span>ml/data_pipeline.py</span><span class="tag">v1 → v2 全流程</span></div>
+<pre><code>def load_raw(path: str | Path) -&gt; pd.DataFrame:
+    """读原始 CSV，所有列保持文本，转换由我们控制。
+
+    dtype=str 阻止 pandas 自行把空单元格变成 NaN，
+    也阻止它为 Period（形如 YYYY.MM 的文本）猜测数值类型。
+    """
+    return pd.read_csv(path, dtype=str, keep_default_na=False, na_values=[""])
+
+
+def normalize_units(series: pd.Series) -&gt; pd.Series:
+    """让 UNITS 一致：源数据混用了 Index 和 index。"""
+    return series.str.strip().str.title()
+
+
+def clean(df: pd.DataFrame) -&gt; pd.DataFrame:
+    """应用基础清洗规则并返回新表。
+
+    步骤：
+        1. 重命名拼错的 MAGNTUDE 列
+        2. 丢弃标识列与近乎为空的列
+        3. 归一 UNITS 的大小写
+        4. 把 Data_value 转数值并丢弃没有目标的行使
+        5. 用 Unknown 填补剩余的类别空缺
+
+    本函数不按单位过滤；select_target_units 单独做这件事，
+    使该步骤显式且可测试。
+    """
+    out = df.copy()
+    out = out.rename(columns=RENAME_COLUMNS)
+    out = out.drop(columns=[c for c in LEAKY_COLUMNS + DROP_COLUMNS if c in out.columns])
+
+    if "UNITS" in out.columns:
+        out["UNITS"] = normalize_units(out["UNITS"])
+
+    # 没有目标值的行对监督学习毫无用处
+    out[TARGET] = pd.to_numeric(out[TARGET], errors="coerce")
+    out = out.dropna(subset=[TARGET])
+
+    for column in CATEGORICAL_FEATURES:
+        if column in out.columns:
+            out[column] = out[column].astype("string").fillna(UNKNOWN)
+            out[column] = out[column].str.strip()
+            out[column] = out[column].replace("", UNKNOWN)
+
+    return out.reset_index(drop=True)
+
+
+def select_target_units(df: pd.DataFrame, units: str = TARGET_UNITS) -&gt; pd.DataFrame:
+    """只保留 UNITS 等于 units 的行，并丢掉该列。
+
+    过滤之后 UNITS 是常量，不携带任何信息。
+    """
+    out = df[df["UNITS"] == units].copy()
+    out = out.drop(columns=[c for c in ("UNITS",) if c in out.columns])
+    return out.reset_index(drop=True)
+
+
+def drop_constant_columns(df, features=None, min_unique: int = 2):
+    """丢弃不携带信号的列（唯一值少于 min_unique）。
+
+    v2 过滤到 Index 单位后 MAGNITUDE 塌缩成单一值，
+    留着它只会多出一个无用的 one-hot 列。
+    """
+    features = list(features if features is not None else FEATURE_COLUMNS)
+    kept = [c for c in features if c in df.columns and df[c].nunique() &gt;= min_unique]
+    dropped = [c for c in features if c in df.columns and c not in kept]
+    out = df.drop(columns=dropped) if dropped else df.copy()
+    return out, kept
+
+
+def add_time_features(df: pd.DataFrame) -&gt; pd.DataFrame:
+    """把 Period（YYYY.MM）拆成整数 year 与 month。
+
+    无法解析的行得到 NaN，由调用方丢弃。源数据里没有这样的行，
+    但这道防线能避免 API 在坏输入上崩溃。
+    """
+    out = df.copy()
+    period = out["Period"].astype("string").str.strip()
+    parts = period.str.extract(r"^(?P&lt;year&gt;\d{4})\.(?P&lt;month&gt;\d{2})$")
+    out["year"] = pd.to_numeric(parts["year"], errors="coerce")
+    out["month"] = pd.to_numeric(parts["month"], errors="coerce")
+    return out</code></pre>
+  </div>
+
+  <div class="codeblock">
+    <div class="fname"><span>data/processed/clean_v2.csv.dvc</span><span class="tag">DVC 指针（进 Git）</span></div>
+<pre><code>outs:
+- md5: a0f682da4b534942450d8f30ba6cca1d
+  size: 15863981
+  nfiles: 1
+  hash: md5
+  path: clean_v2.csv</code></pre>
+  </div>
+
+  <div class="callout note">
+    <strong>这个 6 行的文件就是"数据版本"的全部。</strong>
+    数据本体（15.8 MB）在 Azure 上，Git 里只有这份指针。
+    <code>a0f682da…</code> 由文件内容算出，改一个字节就会变，无法伪造。
+  </div>
+
+  <h3 class="req" id="r1-3"><span class="rid">R1.3</span>至少 3 个测试，每个含多个边界用例<span class="badge exceed">超出</span></h3>
+
+  <blockquote class="brief">
+    <span class="label">手册原文</span>
+    You need to write <em>at least 3 meaningful tests</em> implemented for your application,
+    <em>each having multiple edge cases</em>.
+  </blockquote>
+
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>文件</th><th class="num-cell">数量</th><th>覆盖的边界</th></tr></thead>
+      <tbody>
+        <tr><td><code>tests/unit/test_schemas.py</code></td><td class="num-cell">32</td>
+          <td>年份 1899 / 2100 / 2101 / 9999；月份 0 / −1 / 13 / 99；9 个字段逐个缺失；多余字段；字符串、<code>None</code>、浮点、列表冒充整数</td></tr>
+        <tr><td><code>tests/unit/test_data_pipeline.py</code></td><td class="num-cell">31</td>
+          <td>列重命名；删泄漏列；单位过滤；空 DataFrame；目标转数值；不可解析目标；NaN 与空串；5 种畸形 <code>Period</code>；幂等性</td></tr>
+        <tr><td><code>tests/integration/test_model_loader.py</code></td><td class="num-cell">8</td>
+          <td>模型文件缺失；未加载即预测；多行输入；未见类别；summary 有无；reload</td></tr>
+        <tr><td><code>tests/api/test_predict_api.py</code></td><td class="num-cell">25</td>
+          <td>健康检查；确定性；6 种非法载荷；9 个字段逐个缺失；空 body；未见类别；无模型时 503；OpenAPI</td></tr>
+        <tr style="background:#f1f4f9;font-weight:700"><td>合计</td><td class="num-cell">96</td><td>手册下限为 3</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="codeblock">
+    <div class="fname"><span>tests/api/test_predict_api.py</span><span class="tag">参数化边界用例（节选）</span></div>
+<pre><code>REQUIRED_FIELDS = ["year", "month", "STATUS", "Subject",
+                   "Group", "Series_title_1"]
+
+@ pytest.mark.parametrize("field", REQUIRED_FIELDS)
+def test_predict_missing_required_field_returns_422(client, field):
+    """必填字段缺失必须被拒绝，且是 422 而非 500。"""
+    payload = {k: v for k, v in VALID_PAYLOAD.items() if k != field}
+    response = client.post("/predict", json=payload)
+    assert response.status_code == 422
+
+
+# 这三个字段在源数据里本就稀疏，留空应被规范化成 "Unknown" 而不是拒绝
+OPTIONAL_FIELDS = ["Series_title_2", "Series_title_3", "Series_title_4"]
+
+@ pytest.mark.parametrize("field", OPTIONAL_FIELDS)
+def test_predict_missing_optional_field_still_scores(client, field):
+    payload = {k: v for k, v in VALID_PAYLOAD.items() if k != field}
+    response = client.post("/predict", json=payload)
+    assert response.status_code == 200
+
+
+@ pytest.mark.parametrize("year", [1899, 2101, 9999])
+def test_predict_year_out_of_range_returns_422(client, year):
+    response = client.post("/predict", json={**VALID_PAYLOAD, "year": year})
+    assert response.status_code == 422
+
+
+@ pytest.mark.parametrize("month", [0, -1, 13, 99])
+def test_predict_month_out_of_range_returns_422(client, month):
+    response = client.post("/predict", json={**VALID_PAYLOAD, "month": month})
+    assert response.status_code == 422</code></pre>
+  </div>
+
+  <div class="codeblock">
+    <div class="fname"><span>tests/unit/test_data_pipeline.py</span><span class="tag">畸形输入不得抛异常</span></div>
+<pre><code>@pytest.mark.parametrize("bad", ["", "not-a-period", "2020", "2020-06", "20.6"])
+def test_add_time_features_returns_nan_for_unparseable_period(bad):
+    """畸形的 Period 必须变成 NaN，绝不抛异常。
+
+    这条断言保护的是 API：外部输入一旦漏进解析层，
+    服务应当降级而不是 500。
+    """
+    out = add_time_features(pd.DataFrame({"Period": [bad]}))
+    assert pd.isna(out["year"].iloc[0])
+    assert pd.isna(out["month"].iloc[0])
+
+
+def test_clean_is_idempotent_on_already_clean_data():
+    """对已清洗的数据再跑一次 clean 不得改变结果。
+
+    幂等性是流水线可重跑的前提：误跑两次不应该污染数据。
+    """
+    once = clean(make_frame())
+    twice = clean(once)
+    pd.testing.assert_frame_equal(
+        once.sort_index(axis=1), twice.sort_index(axis=1), check_dtype=False
+    )</code></pre>
+  </div>
+
+<pre><code>python -m pytest -q
+# 96 passed</code></pre>
+</section>
+
+<!-- ================= 04 PART 2 ================= -->
+<section id="part2">
+  <h2><span class="num">04</span>DevOps</h2>
+  <p class="section-lede">手册第二部分：版本控制、容器化、持续集成与自动部署。</p>
+
+  <h3 class="req" id="r2-1"><span class="rid">R2.1–R2.2</span>Git/GitHub 与分支策略<span class="badge pass">满足</span></h3>
+
+  <blockquote class="brief">
+    <span class="label">手册原文</span>
+    Plan your Git <em>branching scheme</em> (main, staging, dev features…),
+    with the <em>proper merging path</em> (from feature to dev to staging to main).
+  </blockquote>
+
+  <div class="arch">
+<pre><code>  feature/*  ──commit──►  本地工作
+      │
+      │  git push + 开 PR
+      ▼
+    dev      ──► CI: ruff check · ruff format --check · pytest(96) · docker build
+      │           ▲
+      │           └── 分支保护：检查未通过 ⇒ Merge 按钮不可点击
+      │  合并（PR）
+      ▼
+  staging    ──► CI 再跑一遍（PR 事件）
+      │  合并（PR）──► CD: environment=staging
+      │                生成 .env → docker build trade-index:staging
+      ▼
+    main     ──► CI 再跑一遍（PR 事件）
+         合并（PR）──► CD: environment=production
+                       生成 .env → docker build trade-index:production</code></pre>
+  </div>
+
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>分支</th><th>角色</th><th>触发</th><th>流水线</th></tr></thead>
+      <tbody>
+        <tr><td><code>feature/*</code></td><td>隔离开发</td><td>—</td><td>无（仅本地）</td></tr>
+        <tr><td><code>dev</code></td><td>集成</td><td>向它提交 PR / push</td><td>CI</td></tr>
+        <tr><td><code>staging</code></td><td>预发布</td><td>向它提交 PR</td><td>CI</td></tr>
+        <tr><td><code>staging</code></td><td>预发布</td><td>合并（push）</td><td><strong>CD —— staging 镜像</strong></td></tr>
+        <tr><td><code>main</code></td><td>生产</td><td>向它提交 PR</td><td>CI</td></tr>
+        <tr><td><code>main</code></td><td>生产</td><td>合并（push）</td><td><strong>CD —— production 镜像</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout good">
+    <strong>这条路径被真实执行了两次，不是仅停留在文档中。</strong>
+    PR #1 / #2 完成首轮 <code>dev → staging → main</code>，PR #3 / #4 与后续 PR 重复了同样的路径。
+    <code>main</code> 从未被直接 push：所有改动都必须经过两层拉取请求。
+  </div>
+
+  <h3 class="req" id="r2-3"><span class="rid">R2.3</span>精简的 Dockerfile 与 .dockerignore<span class="badge pass">满足</span></h3>
+
+  <div class="codeblock">
+    <div class="fname"><span>Dockerfile</span><span class="tag">50 行 · 181 MB</span></div>
+<pre><code>ARG BASE_IMAGE=python:3.12-slim
+FROM ${BASE_IMAGE}
+
+# PyPI 慢时覆盖索引地址（中国大陆）：
+#   docker build --build-arg PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple \
+#                -t trade-index:local .
+# 默认值让 GitHub Actions 走官方 PyPI
+ARG PIP_INDEX_URL=https://pypi.org/simple
+
+# 部署身份，由 CD 从其生成的 .env 提供。
+# 采用构建参数而非把 .env 打进镜像层：值在 docker history 中可见，
+# 但没有任何密钥文件被固化进镜像
+ARG APP_ENV=local
+ARG LOG_LEVEL=INFO
+
+# 不生成 .pyc；日志不缓冲，使 docker logs 立即可见
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    APP_ENV=${APP_ENV} \
+    LOG_LEVEL=${LOG_LEVEL}
+
+WORKDIR /app
+
+# 依赖层在前：只要 requirements.txt 不变，这一层就命中缓存，
+# 改应用代码不会触发重装（这是镜像构建从 3 分钟降到 45 秒的关键）
+COPY requirements.txt ./
+RUN python -m pip install --no-cache-dir \
+        --index-url "${PIP_INDEX_URL}" \
+        -r requirements.txt
+
+# 应用代码与启动时加载的训练产物
+COPY app/ ./app/
+COPY models/ ./models/
+
+# 以非 root 运行。UID 10001 与课程其它容器保持一致的约定
+RUN useradd --create-home --uid 10001 appuser \
+    &amp;&amp; chown -R 10001:10001 /app
+USER 10001
+
+EXPOSE 8000
+
+# 模型在 FastAPI 的 lifespan 钩子里加载一次，因此容器起来后几乎立即开始服务
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
+  </div>
+
+  <div class="codeblock">
+    <div class="fname"><span>.dockerignore</span><span class="tag">52 行 · 上下文 15.7 MB</span></div>
+<pre><code># 让构建上下文小而无私密。
+#
+# 这里最重要的两件事：
+#   * data/ 装了 23 MB 原始 CSV 和 16 MB 清洗 CSV。推理一个都不需要，
+#     装进去只会让镜像膨胀。
+#   * .dvc/config.local 与 .env 持有凭据，绝不能进入镜像。
+
+# 版本控制与本地环境
+.git/
+.gitignore
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# 测试与 lint 缓存
+.pytest_cache/
+.ruff_cache/
+
+# 测试不属于运行时镜像
+tests/
+pytest.ini
+
+# 数据通过 DVC 拉取或挂载，不烤进镜像
+data/
+.dvc/
+.dvcignore
+*.csv
+*.parquet
+
+# 实验追踪输出
+mlruns/
+mlartifacts/
+mlflow.db
+mlflow.db-*
+
+# 凭据
+.env
+.env.*
+.dvc/config.local
+
+# 文档与 CI 配置
+*.md
+.github/
+.gitattributes
+
+# 编辑器与系统噪音
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db</code></pre>
+  </div>
+
+<pre><code>docker images trade-index
+# REPOSITORY     TAG      DISK USAGE   CONTENT SIZE
+# trade-index    local    719MB        181MB</code></pre>
+
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>措施</th><th>效果</th></tr></thead>
+      <tbody>
+        <tr><td><code>python:3.12-slim</code> 基础镜像</td><td>约 50 MB，而非完整镜像的约 1 GB</td></tr>
+        <tr><td><code>requirements.txt</code> 排除 MLflow / PyYAML</td><td>比全量安装省约 200 MB</td></tr>
+        <tr><td>先 <code>COPY requirements.txt</code> 再 <code>COPY app/</code></td><td>改代码不触发依赖重装，层缓存生效</td></tr>
+        <tr><td><code>.dockerignore</code> 排除 data / tests / .venv / .git / .env</td><td>构建上下文 15.7 MB，而非约 40 MB</td></tr>
+        <tr><td><code>useradd … &amp;&amp; USER 10001</code></td><td>以非 root 用户运行</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="req" id="r2-4"><span class="rid">R2.4–R2.6</span>CI 必须跑测试、静态分析、构建镜像<span class="badge pass">满足</span></h3>
+
+  <blockquote class="brief">
+    <span class="label">手册原文</span>
+    On every pull request to any protected branch, the CI pipeline must:
+    run the <em>full test suite</em>; run <em>linting / formatting / static analysis</em>;
+    build the <em>Docker image</em> and ensure it succeeds.
+  </blockquote>
+
+  <div class="codeblock">
+    <div class="fname"><span>.github/workflows/ci.yml</span><span class="tag">完整文件</span></div>
+<pre><code>name: CI
+
+# 手册要求在「任何指向受保护分支的 PR」上运行这些检查。
+# dev 也被包含，因为它是集成分支：功能只有在检查通过后才并入。
+on:
+  pull_request:
+    branches: [main, staging, dev]
+  push:
+    branches: [dev]
+
+# 工作流只读仓库；不需要写权限令牌
+permissions:
+  contents: read
+
+# 同一 PR 的新推送会取消上一次运行，避免评审等待过期结果
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-lint-build:
+    name: Test, lint and build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      # 检查 1/3：静态分析。先于测试运行，让明显的语法或导入问题快速失败。
+      # scripts/ 也被包含，使验收脚本与应用程序受到同等标准约束。
+      - name: Lint
+        run: python -m ruff check app ml tests scripts
+
+      - name: Check formatting
+        run: python -m ruff format --check app ml tests scripts
+
+      # 检查 2/3：完整测试套件
+      - name: Run tests
+        run: python -m pytest -q
+
+      # 检查 3/3：镜像必须能构建。CI 不推送任何东西；
+      # 那是 CD 的职责，且只在合并到 staging 或 main 时发生
+      - name: Build Docker image
+        run: docker build --tag trade-index:ci .</code></pre>
+  </div>
+
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>手册要求</th><th>工作流步骤</th><th>证据</th></tr></thead>
+      <tbody>
+        <tr><td>跑完整测试套件</td><td><code>Run tests</code> → <code>pytest -q</code></td><td>Actions 日志 <code>96 passed</code></td></tr>
+        <tr><td>静态分析</td><td><code>Lint</code> → <code>ruff check</code></td><td><code>All checks passed!</code></td></tr>
+        <tr><td>格式化检查</td><td><code>Check formatting</code></td><td><code>16 files already formatted</code></td></tr>
+        <tr><td>构建 Docker 镜像</td><td><code>Build Docker image</code></td><td>每次运行均成功</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout note">
+    lint 规则固定在 <code>pyproject.toml</code> 中，因此<strong>本地运行与 CI 运行的结论一致</strong>。
+    没有这一点，"CI 通过"就不具备参考价值。
+  </div>
+
+  <h3 class="req" id="r2-7"><span class="rid">R2.7</span>CI 失败则无法合并<span class="badge pass">满足</span></h3>
+
+  <blockquote class="brief">
+    <span class="label">手册原文</span>
+    <em>A PR cannot be merged if CI fails.</em>
+  </blockquote>
+
+  <p><code>dev</code>、<code>staging</code>、<code>main</code> 三个分支均启用了保护规则：</p>
+  <ul class="plain">
+    <li>Require a pull request before merging</li>
+    <li>Require status checks to pass —— 勾选 <code>Test, lint and build</code></li>
+    <li>Require branches to be up to date before merging</li>
+  </ul>
+  <p>效果：CI 一旦失败，拉取请求页面上的 <strong>Merge 按钮在物理上不可点击</strong>。这是平台层的强制，不依赖人的自觉。</p>
+
+  <h3 class="req" id="r2-8"><span class="rid">R2.8</span>至少一个自动化部署阶段<span class="badge pass">满足</span></h3>
+
+  <blockquote class="brief">
+    <span class="label">手册原文</span>
+    Merges to <em>staging</em> → uses GitHub secrets specific for the staging environment
+    to <em>create a staging .env file</em>, then build the staging Docker image.
+    Merges to <em>main</em> → … production …
+  </blockquote>
+
+  <div class="codeblock">
+    <div class="fname"><span>.github/workflows/cd.yml</span><span class="tag">staging 作业（production 对称）</span></div>
+<pre><code>name: CD
+
+# 交付只在代码落到部署分支时运行。PR 永远到不了这个工作流，
+# 因此一个 PR 不可能产出镜像
+on:
+  push:
+    branches: [staging, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cd-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-staging:
+    name: Build staging image
+    if: github.ref == 'refs/heads/staging'
+    runs-on: ubuntu-latest
+    # 声明 environment 让 GitHub 从 staging 环境的密钥库解析 secrets.*，
+    # 而非从仓库级默认值。这正是 staging 与 production 相隔离的机制
+    environment: staging
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      # 手册要求从环境专属密钥生成 .env。
+      # 它写入 runner 的工作区，其值再作为构建参数传入，
+      # 因此没有任何密钥文件落进镜像层
+      - name: Create staging .env from secrets
+        env:
+          APP_ENV: ${{ secrets.APP_ENV }}
+          LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+        run: |
+          : "${APP_ENV:=staging}"
+          : "${LOG_LEVEL:=INFO}"
+          {
+            echo "APP_ENV=${APP_ENV}"
+            echo "LOG_LEVEL=${LOG_LEVEL}"
+          } &gt; .env
+          echo "Generated .env:"
+          cat .env
+
+      - name: Build staging image
+        run: |
+          set -a
+          . ./.env
+          set +a
+          docker build \
+            --build-arg APP_ENV="${APP_ENV}" \
+            --build-arg LOG_LEVEL="${LOG_LEVEL}" \
+            --tag "trade-index:staging" \
+            --tag "trade-index:staging-${GITHUB_SHA::12}" \
+            .
+          docker image ls trade-index</code></pre>
+  </div>
+
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>手册要素</th><th>实现</th></tr></thead>
+      <tbody>
+        <tr><td>staging 专属 Secrets</td><td>作业绑定 <code>environment: staging</code></td></tr>
+        <tr><td>生成 staging 的 .env</td><td>写出 <code>APP_ENV=</code> 与 <code>LOG_LEVEL=</code></td></tr>
+        <tr><td>构建 staging 镜像</td><td><code>trade-index:staging</code> 与 <code>trade-index:staging-&lt;sha12&gt;</code></td></tr>
+        <tr><td>production 同理</td><td>另一个作业绑定 <code>environment: production</code></td></tr>
+        <tr><td>只在对应分支运行</td><td><code>if: github.ref == …</code>，另一个报告 <em>skipped</em></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h4>证据 —— GitHub Deployments 页面</h4>
+<pre><code>staging (#1)      8 分钟前   Deployed to staging by … via CD #1
+production (#2)   1 分钟前   Deployed to production by … via CD #2</code></pre>
+  </div>
+
+  <div class="callout warn">
+    <strong>一个有意作出的设计决策：</strong>
+    <code>.env</code> 中的值通过 <code>--build-arg</code> 传入，而不是 <code>COPY</code> 进镜像。
+    机制完全相同，但<strong>不会把密钥文件固化到镜像层中</strong>。
+    <code>APP_ENV</code> 由 <code>/health</code> 回显，因此该配置在运行时依然可观测。
+  </div>
+
+  <h3 class="req" id="r2-9"><span class="rid">R2.9</span>CI 配置与 README 说明<span class="badge pass">满足</span></h3>
+  <p>README 中两节直接对应手册要求：</p>
+  <ul class="plain">
+    <li><strong>§How code moves to production</strong> —— commit → build → test → staging → prod 的完整流程</li>
+    <li><strong>§Branching and pipelines</strong> —— 哪个分支触发哪条流水线的映射表</li>
+  </ul>
+<pre><code>grep -c TODO README.md
+# 0</code></pre>
+</section>
+
+<!-- ================= 05 PART 3 ================= -->
+<section id="part3">
+  <h2><span class="num">05</span>MLOps</h2>
+  <p class="section-lede">手册第三部分：数据版本管理与实验追踪。</p>
+
+  <h3 class="req" id="r3-1"><span class="rid">R3.1–R3.2</span>DVC 跟踪数据并配置远端<span class="badge pass">满足</span></h3>
+
+<pre><code>dvc status
+# Data and pipelines are up to date.
+
+dvc status --cloud
+# Cache and remote 'myazure' are in sync.</code></pre>
+
+  <div class="codeblock">
+    <div class="fname"><span>.dvc/config</span><span class="tag">进 Git · 不含令牌</span></div>
+<pre><code>[core]
+    remote = myazure
+['remote "myazure"']
+    url = azure://dvc
+    account_name = wut2026</code></pre>
+  </div>
+
+  <div class="codeblock">
+    <div class="fname"><span>.dvc/config.local</span><span class="tag">被 gitignore · 含 SAS 令牌</span></div>
+<pre><code>['remote "myazure"']
+    sas_token = sp=racwdl&amp;st=...&amp;se=2026-12-12&amp;sig=...   # 141 字符</code></pre>
+  </div>
+
+  <div class="callout risk">
+    <strong>安全提示：</strong>SAS 令牌有效期至 2026-12-12。项目交付后建议在 Azure 门户轮换一次
+    —— 该令牌同时以明文形式出现在课程提供的 PDF 中。
+    <code>git check-ignore .dvc/config.local</code> 已确认它不会被提交。
+  </div>
+
+  <h3 class="req" id="r3-3"><span class="rid">R3.3</span>至少维护 2 个数据集版本<span class="badge pass">满足</span></h3>
+
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>版本</th><th>Git 标签</th><th>提交</th><th>DVC md5</th><th class="num-cell">行数</th></tr></thead>
+      <tbody>
+        <tr><td>v1 原始</td><td><code>data-v1</code></td><td><code>a3b8237</code></td><td><code>42171ec985af1d3aed38f4d6f497030b</code></td><td class="num-cell">104,613</td></tr>
+        <tr><td>v2 清洗</td><td><code>data-v2</code></td><td><code>a5eafb0</code></td><td><code>a0f682da4b534942450d8f30ba6cca1d</code></td><td class="num-cell">77,337</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+<pre><code>git tag --list
+# data-v1
+# data-v2
+
+# 复现 v1：
+git switch --detach data-v1
+dvc pull</code></pre>
+
+  <h3 class="req" id="r3-4"><span class="rid">R3.4</span>记录来源、v1→v2 改动、commit ↔ 版本映射<span class="badge pass">满足</span></h3>
+
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>v1 → v2 的改动</th><th class="num-cell">影响行数</th><th>理由</th></tr></thead>
+      <tbody>
+        <tr><td>重命名 <code>MAGNTUDE</code> → <code>MAGNITUDE</code></td><td class="num-cell">全部</td><td>源数据拼写错误</td></tr>
+        <tr><td>丢弃 <code>Series_reference</code></td><td class="num-cell">全部</td><td>序列 ID 唯一标识一行，是泄漏特征</td></tr>
+        <tr><td>丢弃 <code>Series_title_5</code></td><td class="num-cell">全部</td><td>几乎全空，无信息</td></tr>
+        <tr><td>归一 <code>UNITS</code> 大小写</td><td class="num-cell">部分</td><td>源数据混用 <code>Index</code> / <code>index</code></td></tr>
+        <tr><td>丢弃目标为空的行</td><td class="num-cell">901</td><td>无法用于监督学习</td></tr>
+        <tr><td>类别空缺填 <code>Unknown</code></td><td class="num-cell">部分</td><td>保留样本，同时让"缺失"成为显式类别</td></tr>
+        <tr><td>只保留 <code>UNITS == "Index"</code></td><td class="num-cell">−26,375</td><td>不同单位量纲不可混训</td></tr>
+        <tr><td><code>Period</code> 拆成 <code>year</code> / <code>month</code></td><td class="num-cell">全部</td><td>文本无法被模型使用</td></tr>
+        <tr><td>丢弃常量列 <code>MAGNITUDE</code></td><td class="num-cell">全部</td><td>过滤后塌缩为单值</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="req" id="r3-5"><span class="rid">R3.5</span>原始数据不提交到 Git<span class="badge pass">满足</span></h3>
+
+<pre><code>git ls-files | grep -E '\.(csv|parquet)$'
+# （无输出）
+
+git status --short --ignored | grep data/
+# !! data/raw/raw_dataset.csv
+# !! data/processed/clean_v2.csv</code></pre>
+
+  <div class="codeblock">
+    <div class="fname"><span>.gitignore</span><span class="tag">关键片段</span></div>
+<pre><code># 数据：DVC 管指针，只忽略数据本体。
+# 注意：这里绝不要用裸的 "data/raw/*" 通配。
+# 它会让 DVC 3.x 停止发现 .dvc 指针文件（在 DVC 3.67.1 / Windows 上已验证）
+data/raw/*.csv
+data/raw/*.parquet
+data/raw/*.json
+data/processed/*.csv
+data/processed/*.parquet
+data/processed/*.json
+.dvc/cache/
+.dvc/tmp/</code></pre>
+  </div>
+
+  <div class="callout warn">
+    <strong>这里踩过一个真实的坑。</strong>
+    最初写的是 <code>data/raw/</code>（整目录排除），导致 <code>dvc add</code> 报
+    <em>"bad DVC file name … is git-ignored"</em>；后来改成 <code>data/raw/*</code>，
+    又导致 <code>dvc status</code> 报告 "no data tracked" —— 因为通配把所有
+    <code>.dvc</code> 指针也匹配掉了。最终改为按扩展名精确排除才正确。
+  </div>
+
+  <h3 class="req" id="r3-6"><span class="rid">R3.6</span>MLflow 记录五类信息<span class="badge pass">满足</span></h3>
+
+  <div class="codeblock">
+    <div class="fname"><span>ml/train.py</span><span class="tag">一次实验的完整记录</span></div>
+<pre><code>def run_experiment(name, model, X_train, X_test, y_train, y_test,
+                   params, categoricals, commit, data_version, data_hash):
+    """拟合一个模型、评估它，并把一切记进 MLflow。
+
+    返回拟合好的管线供调用方导出用于服务，以及留出集指标。
+    """
+    pipeline = Pipeline(steps=[("prep", build_preprocessor(categoricals)),
+                               ("model", model)])
+
+    with mlflow.start_run(run_name=name):
+        # ① 代码版本
+        mlflow.log_param("git_commit", commit)
+        # ② 数据集版本（来自 .dvc 指针的 md5）
+        mlflow.log_param("data_version", data_version)
+        mlflow.log_param("data_dvc_hash", data_hash)
+        # ③ 超参数（含数据规模，便于判断训练条件）
+        mlflow.log_param("train_rows", len(X_train))
+        mlflow.log_param("test_rows", len(X_test))
+        for key, value in params.items():
+            mlflow.log_param(key, value)
+
+        pipeline.fit(X_train, y_train)
+        predictions = pipeline.predict(X_test)
+        # ④ 指标
+        metrics = evaluate(y_test, predictions)
+        mlflow.log_metrics(metrics)
+
+        # ⑤ 模型产物。MLflow 3.x 用 skops 序列化 sklearn 模型，
+        # 除非显式信任树类型，否则会拒绝树集成。
+        # 这个模型是我们在进程内自己训练的，因此在此信任它是安全的
+        mlflow.sklearn.log_model(
+            pipeline, name="model",
+            skops_trusted_types=TRUSTED_SKOPS_TYPES
+        )
+
+        print(f"[{name}] " + "  ".join(f"{k}={v:.4f}" for k, v in metrics.items()))
+        return pipeline, metrics</code></pre>
+  </div>
+
+  <div class="codeblock">
+    <div class="fname"><span>ml/train.py</span><span class="tag">从 .dvc 指针提取数据版本</span></div>
+<pre><code>def dvc_hash(pointer_path: str) -&gt; str:
+    """读取 DVC 指针里的 md5，作为数据集版本标识。
+
+    该哈希由文件内容算出，数据一变它就变，
+    这正是手册所说的 "DVC dataset version ID"。
+
+    DVC 指针形如::
+        outs:
+        - md5: 42171ec985af1d3aed38f4d6f497030b
+          size: 23324132
+          path: raw_dataset.csv
+
+    md5 行以 YAML 列表标记 "- " 开头，匹配前要先剥掉它。
+    """
+    path = Path(pointer_path)
+    if not path.exists():
+        return "unknown"
+    for line in path.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if stripped.startswith("- "):
+            stripped = stripped[2:].strip()
+        if stripped.startswith("md5:"):
+            return stripped.split("md5:", 1)[1].strip()
+    return "unknown"</code></pre>
+  </div>
+
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>手册要求</th><th>MLflow 字段</th><th>取值来源</th></tr></thead>
+      <tbody>
+        <tr><td>代码版本</td><td><code>git_commit</code></td><td><code>git rev-parse HEAD</code></td></tr>
+        <tr><td>数据集版本</td><td><code>data_dvc_hash</code>、<code>data_version</code></td><td>解析 <code>.dvc</code> 指针</td></tr>
+        <tr><td>超参数</td><td><code>model_type</code>、<code>n_estimators</code>、<code>max_depth</code>、<code>min_samples_leaf</code>、<code>random_state</code>、<code>train_rows</code>、<code>test_rows</code></td><td><code>ml/configs/baseline.yaml</code></td></tr>
+        <tr><td>指标</td><td><code>rmse</code>、<code>mae</code>、<code>r2</code></td><td>留出集评估</td></tr>
+        <tr><td>模型产物</td><td><code>model.skops</code>（51 MB）</td><td><code>mlflow.sklearn.log_model</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="codeblock">
+    <div class="fname"><span>ml/configs/baseline.yaml</span><span class="tag">超参数外置</span></div>
+<pre><code># 调优后的 RandomForest 实验的超参数。
+#
+# 基线实验使用 sklearn 默认值的 LinearRegression；只有森林需要配置项。
+# 把这些值放在这里意味着训练脚本从不硬编码它们，
+# 因此改 YAML 就能重跑一次实验。
+random_forest:
+  n_estimators: 120
+  max_depth: 20
+  min_samples_leaf: 2</code></pre>
+  </div>
+
+<pre><code>python -m mlflow ui --backend-store-uri sqlite:///mlflow.db
+# 打开 http://127.0.0.1:5000 → tuned-forest → Parameters 标签页</code></pre>
+
+  <div class="callout note">
+    <strong>为什么用 sqlite 而非默认的 ./mlruns：</strong>
+    MLflow 3.x 已弃用文件型后端存储，<code>mlflow ui</code> 会直接拒绝启动并提示
+    <em>"filesystem tracking backend is in maintenance mode"</em>。
+  </div>
+
+  <h3 class="req" id="r3-7"><span class="rid">R3.7–R3.8</span>至少 2 个实验，并说明哪个可上生产<span class="badge pass">满足</span></h3>
+
+  <div class="codeblock">
+    <div class="fname"><span>ml/train.py</span><span class="tag">两个实验与产物导出</span></div>
+<pre><code>baseline_params = {"model_type": "LinearRegression", "fit_intercept": True}
+run_experiment(
+    name="baseline-linear",
+    model=LinearRegression(fit_intercept=True),
+    params=baseline_params,
+    **common,
+)
+
+forest_cfg = config.get("random_forest", {})
+forest_params = {
+    "model_type": "RandomForestRegressor",
+    "n_estimators": forest_cfg.get("n_estimators", 100),
+    "max_depth": forest_cfg.get("max_depth", 20),
+    "min_samples_leaf": forest_cfg.get("min_samples_leaf", 1),
+    "random_state": RANDOM_STATE,
+}
+forest_pipeline, _forest_metrics = run_experiment(
+    name="tuned-forest",
+    model=RandomForestRegressor(
+        n_estimators=forest_params["n_estimators"],
+        max_depth=forest_params["max_depth"],
+        min_samples_leaf=forest_params["min_samples_leaf"],
+        random_state=RANDOM_STATE,
+        n_jobs=-1,
+    ),
+    params=forest_params,
+    **common,
+)
+
+# 把可用于生产的模型导出到 run summary 旁边，
+# 使 API 无需 MLflow 追踪服务器即可在请求时加载。
+# compress=3 把 46 MB 的森林压到约 15 MB，
+# 让推理镜像与仓库都保持小巧，而转储耗时无明显增加
+models_dir = Path("models")
+models_dir.mkdir(exist_ok=True)
+model_path = models_dir / "model.joblib"
+joblib.dump(forest_pipeline, model_path, compress=3)
+
+summary = {
+    "git_commit": commit,
+    "data_version": args.data_version,
+    "data_dvc_hash": data_hash,
+    "model_file": str(model_path),
+    "model_type": forest_params["model_type"],
+    "feature_columns": list(NUMERIC_FEATURES) + list(categoricals),
+}
+(models_dir / "run_summary.json").write_text(
+    json.dumps(summary, indent=2), encoding="utf-8"
+)</code></pre>
+  </div>
+
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>Run</th><th>模型</th><th class="num-cell">RMSE</th><th class="num-cell">MAE</th><th class="num-cell">R²</th></tr></thead>
+      <tbody>
+        <tr><td><code>baseline-linear</code></td><td>LinearRegression</td><td class="num-cell">578.1820</td><td class="num-cell">324.5331</td><td class="num-cell">0.4689</td></tr>
+        <tr style="background:#e6f6ee;font-weight:700"><td><code>tuned-forest</code></td><td>RandomForestRegressor</td><td class="num-cell">240.0274</td><td class="num-cell">154.4691</td><td class="num-cell">0.9085</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h4><code>ml/README_experiments.md</code> 回答的两个问题</h4>
+    <ul class="plain" style="margin-bottom:0">
+      <li><strong>§4 哪个可用于生产</strong> —— 指明 <code>tuned-forest</code>，四条按重要性排序的理由</li>
+      <li><strong>§5 优化哪个指标及为什么</strong> —— 论证 RMSE（与目标同量纲、惩罚大误差、可解释），并说明 R² 与 MAE 的辅助角色</li>
+      <li><strong>§6 五条诚实的局限</strong> —— 包括"随机切分对时间序列数据不够严谨"这一实质性弱点</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 06 PART 4 ================= -->
+<section id="part4">
+  <h2><span class="num">06</span>仓库结构对照</h2>
+  <p class="section-lede">手册给出的是一个示例布局，并明确说明 <em>"names can vary, but responsibilities must be clear"</em>。</p>
+
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>手册示例</th><th>本项目</th><th>状态</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td><code>app/main.p</code></td><td><code>app/main.py</code></td><td><span class="badge pass">符合</span></td><td>服务入口</td></tr>
+        <tr><td><code>ml/train.p</code></td><td><code>ml/train.py</code></td><td><span class="badge pass">符合</span></td><td>训练脚本，调用 MLflow</td></tr>
+        <tr><td><code>ml/data_pipeline.p</code></td><td><code>ml/data_pipeline.py</code></td><td><span class="badge pass">符合</span></td><td>预处理与特征工程</td></tr>
+        <tr><td><code>ml/configs/</code></td><td><code>ml/configs/baseline.yaml</code></td><td><span class="badge pass">符合</span></td><td>超参数</td></tr>
+        <tr><td><code>ml/registr/current_model.md</code></td><td><code>ml/registry/current_model.md</code></td><td><span class="badge pass">符合</span></td><td>生产模型说明</td></tr>
+        <tr><td><code>README_data.md</code></td><td><code>ml/README_data.md</code></td><td><span class="badge deviate">偏离</span></td><td>位于 <code>ml/</code> 而非 <code>ml/registry/</code></td></tr>
+        <tr><td><code>README_experiments.md</code></td><td><code>ml/README_experiments.md</code></td><td><span class="badge deviate">偏离</span></td><td>同上</td></tr>
+        <tr><td><code>PROVENANCE.md</code></td><td><code>ml/PROVENANCE.md</code></td><td><span class="badge deviate">偏离</span></td><td>同上</td></tr>
+        <tr><td><code>data.dvc / data/</code></td><td><code>data/raw/*.dvc</code>、<code>data/processed/*.dvc</code></td><td><span class="badge pass">符合</span></td><td>仅指针，不含数据本体</td></tr>
+        <tr><td><code>requirements.txt / pproject.toml</code></td><td>两者，另拆 <code>-dev</code> / <code>-train</code></td><td><span class="badge exceed">超出</span></td><td>运行时依赖与训练依赖分离</td></tr>
+        <tr><td><code>Dockerfile</code></td><td><code>Dockerfile</code></td><td><span class="badge pass">符合</span></td><td>slim，非 root</td></tr>
+        <tr><td><code>.dockerignore</code></td><td><code>.dockerignore</code></td><td><span class="badge pass">符合</span></td><td></td></tr>
+        <tr><td><code>.github/workflows/ci.ml</code></td><td><code>.github/workflows/ci.yml</code></td><td><span class="badge pass">符合</span></td><td>扩展名 <code>.yml</code>；PDF 里的 <code>ci.ml</code> 是排版缺陷</td></tr>
+        <tr><td><code>DEPLOYMENT.md</code></td><td><code>DEPLOYMENT.md</code></td><td><span class="badge pass">符合</span></td><td></td></tr>
+        <tr><td><code>README.md</code></td><td><code>README.md</code></td><td><span class="badge pass">符合</span></td><td></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout warn">
+    <strong>关于三处"有意偏离"：</strong>
+    我把 <code>README_data.md</code>、<code>README_experiments.md</code>、<code>PROVENANCE.md</code>
+    放在 <code>ml/</code> 下，紧邻它们所描述的代码；<code>ml/registry/</code> 只保留
+    <code>current_model.md</code> —— 那才是"模型注册表"应当回答的问题。
+    手册允许命名变化，但此处仍显式标注，使这一选择可见而非看似疏漏。
+  </div>
+</section>
+
+<!-- ================= 07 PART 5 ================= -->
+<section id="part5">
+  <h2><span class="num">07</span>评分交付物</h2>
+
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>交付物</th><th>位置</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>带 MLflow 日志的训练脚本</td><td><code>ml/train.py</code></td><td><span class="badge pass">已交付</span></td></tr>
+        <tr><td>至少 2 个实验（基线 + 改进）</td><td><code>trade-index</code> 下的两个 run</td><td><span class="badge pass">已交付</span></td></tr>
+        <tr><td><code>ml/README_experiments.md</code></td><td>含"哪个可上生产"与指标论证</td><td><span class="badge pass">已交付</span></td></tr>
+        <tr><td><code>ml/README_data.md</code></td><td>含来源、v1→v2、commit 映射</td><td><span class="badge pass">已交付</span></td></tr>
+        <tr><td>CI 配置</td><td><code>.github/workflows/ci.yml</code></td><td><span class="badge pass">已交付</span></td></tr>
+        <tr><td>README 流程与分支映射</td><td><code>README.md</code></td><td><span class="badge pass">已交付</span></td></tr>
+        <tr><td>DVC 两版本 + Azure 远端</td><td><code>.dvc/</code>、两个 <code>.dvc</code> 指针</td><td><span class="badge pass">已交付</span></td></tr>
+        <tr><td>附加：需求追溯矩阵</td><td><code>COMPLIANCE.md</code>、本文</td><td><span class="badge exceed">超出</span></td></tr>
+        <tr><td>附加：一键验收脚本</td><td><code>scripts/verify_project.py</code></td><td><span class="badge exceed">超出</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= 08 VERIFY ================= -->
+<section id="verify">
+  <h2><span class="num">08</span>一键验收</h2>
+
+<pre><code>python scripts/verify_project.py</code></pre>
+<pre><code>====================================================================
+96/96 checks passed
+PROJECT COMPLETE</code></pre>
+
+  <div class="card">
+    <h4>脚本检查的八个方面</h4>
+    <div class="check-line"><span class="ok">✓</span> 1. 应用 —— 端点、lifespan、输入约束、产物与 summary</div>
+    <div class="check-line"><span class="ok">✓</span> 2. 测试 —— 四个文件齐备、边界覆盖、关键断言</div>
+    <div class="check-line"><span class="ok">✓</span> 3. Docker —— slim 基础、非 root、层顺序、.dockerignore</div>
+    <div class="check-line"><span class="ok">✓</span> 4. CI —— 触发条件、三项检查、只读令牌</div>
+    <div class="check-line"><span class="ok">✓</span> 5. CD —— 两个环境、.env 生成、按分支条件</div>
+    <div class="check-line"><span class="ok">✓</span> 6. DVC —— 远端配置、两个指针、标签、config.local 忽略</div>
+    <div class="check-line"><span class="ok">✓</span> 7. 文档 —— 六份文档及其关键内容</div>
+    <div class="check-line"><span class="ok">✓</span> 8. Git 卫生 —— 分支存在、无令牌泄漏、config.local 未跟踪</div>
+  </div>
+</section>
+
+<!-- ================= 09 GAPS ================= -->
+<section id="gaps">
+  <h2><span class="num">09</span>已知偏离与局限</h2>
+  <p class="section-lede">以下问题真实存在，选择记录而不是隐藏。知道工具的边界，本身就是工程能力的一部分。</p>
+
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>项目</th><th>性质</th><th>说明与处理</th></tr></thead>
+      <tbody>
+        <tr><td><code>run_summary.json</code> 的 <code>git_commit</code> 是训练时的提交</td><td><span class="badge deviate">已知局限</span></td>
+          <td>它标识"训练该模型的代码"，而非"最终包含该文件的提交"。已记录在 <code>ml/PROVENANCE.md</code> 的 Known gaps</td></tr>
+        <tr><td>三份 <code>ml/*.md</code> 不在 <code>ml/registry/</code> 下</td><td><span class="badge deviate">有意偏离</span></td>
+          <td>手册允许命名变化；理由见第六节</td></tr>
+        <tr><td><code>model.joblib</code> 作为 14.6 MB 二进制提交进 Git</td><td><span class="badge deviate">取舍</span></td>
+          <td>CI 拿不到 23 MB 原始数据，必须随仓库携带产物。已从 46.5 MB 压缩到 14.6 MB</td></tr>
+        <tr><td>镜像只构建、不推送到镜像仓库</td><td><span class="badge pass">符合</span></td>
+          <td>手册明确只要求构建；推送与真实上线记录在 <code>DEPLOYMENT.md</code> §7</td></tr>
+        <tr><td>随机切分而非时间序列切分</td><td><span class="badge gap">模型局限</span></td>
+          <td>对时间序列不够严谨，已在 <code>ml/README_experiments.md</code> §6 主动列为局限</td></tr>
+        <tr><td>SAS 令牌有效期至 2026-12-12</td><td><span class="badge gap">运维风险</span></td>
+          <td>交付后应轮换。令牌仅存在于被 gitignore 的 <code>.dvc/config.local</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= 10 AUDIT ================= -->
+<section id="audit">
+  <h2><span class="num">10</span>审计记录</h2>
+  <p class="section-lede">交付前进行了三轮实测审计，共发现并修复 11 处问题。以下记录其分类，用于说明验证并非"看起来没问题"。</p>
+
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>#</th><th>问题</th><th>严重度</th><th>修复</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><code>subprocess.run(text=True)</code> 用 GBK 解码 git 输出，抛 <code>UnicodeDecodeError</code>，导致密钥扫描<strong>假通过</strong></td><td><span class="badge gap">高</span></td><td>固定 UTF-8 + <code>errors="replace"</code></td></tr>
+        <tr><td>2</td><td>密钥扫描用 <code>git log -p --all</code>，会流式输出 15 MB 二进制 diff，慢且无信号</td><td><span class="badge deviate">中</span></td><td>改为遍历 <code>git ls-files</code> 逐个读文本文件</td></tr>
+        <tr><td>3</td><td>改进后的扫描把脚本自身的正则字面量 <code>sp=racwdl</code> 判为泄漏</td><td><span class="badge deviate">中</span></td><td>排除脚本自身</td></tr>
+        <tr><td>4</td><td>验收脚本用 <code>/</code> 比较路径，而 Windows 返回 <code>\</code>，4 项检查假失败</td><td><span class="badge deviate">中</span></td><td>改用 <code>Path.as_posix()</code></td></tr>
+        <tr><td>5</td><td><code>ml/data_pipeline.py</code> 零测试覆盖 —— 数据清洗逻辑完全未测</td><td><span class="badge gap">高</span></td><td>新增 <code>tests/unit/test_data_pipeline.py</code>，31 个测试</td></tr>
+        <tr><td>6</td><td>CI 的 ruff 不覆盖 <code>scripts/</code>，与本地检查范围不一致</td><td><span class="badge deviate">低</span></td><td>两侧统一为 <code>app ml tests scripts</code></td></tr>
+        <tr><td>7</td><td><code>to_frame()</code> 的 docstring 称"列顺序很重要"，但 <code>ColumnTransformer</code> 按列名选择</td><td><span class="badge deviate">低</span></td><td>修正描述</td></tr>
+        <tr><td>8</td><td>README 记录 65 个测试，实际已增至 96</td><td><span class="badge deviate">低</span></td><td>更新数字并补测试表行</td></tr>
+        <tr><td>9</td><td><code>/health</code> 的 <code>model_type</code> 显示 <code>Pipeline</code> 而非具体估计器</td><td><span class="badge deviate">中</span></td><td>从 <code>named_steps</code> 末项取类名</td></tr>
+        <tr><td>10</td><td><code>model loaded</code> 日志从未输出（uvicorn 不配置应用 logger）</td><td><span class="badge deviate">中</span></td><td>为该模块 logger 显式挂 <code>StreamHandler</code></td></tr>
+        <tr><td>11</td><td>测试把可选字段当作必填，3 个用例误判为应返回 422</td><td><span class="badge deviate">中</span></td><td>拆分为必填 / 可选两组断言</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================= 11 QA CONCEPT ================= -->
+<section id="qa-concept">
+  <h2><span class="num">11</span>答辩问答 · 概念与选型</h2>
+  <p class="section-lede">点击展开答案。每条给出要点与可指认的代码位置。</p>
+
+  <div class="qa-group">
+    <details class="qa">
+      <summary>为什么用 RandomForest，而不是线性回归或梯度提升？</summary>
+      <div class="qa-body">
+        <p>数据里绝大多数特征（<code>STATUS</code>、<code>Subject</code>、<code>Group</code>、四个 <code>Series_title</code>）都是<strong>类别型</strong>的。
+        经过 one-hot 编码后维度很高，且这些类别之间存在复杂的交互效应。三点理由：</p>
+        <ul>
+          <li><strong>线性模型明显欠拟合</strong>：基线 R² 只有 0.4689，说明目标与特征的关系高度非线性，线性假设不成立。</li>
+          <li><strong>树模型天然处理类别交互</strong>：每棵树在随机子空间上划分，能捕捉"某个 Group 下的某个 Series_title_2 才有的规律"，不需要手工构造交互项。</li>
+          <li><strong>不需要特征缩放</strong>：<code>year</code>/<code>month</code> 与 one-hot 列的量纲差异不会影响树的分裂点选择。</li>
+        </ul>
+        <p>没选梯度提升，是因为 RF 在默认参数下更稳、对过拟合更宽容，且训练时间与调参成本更低——在本项目的数据规模（6 万训练样本）上，RF 已经达到 0.91 的 R²，继续追求边际收益不划算。</p>
+        <span class="qa-ref">ml/train.py · run_experiment · ml/README_experiments.md §4</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>R² = 0.9085 可信吗？是否存在过拟合？</summary>
+      <div class="qa-body">
+        <p>报告的是<strong>留出集</strong>（20%，15,468 行）上的指标，不是训练集。具体证据：</p>
+        <ul>
+          <li>切分用 <code>train_test_split(test_size=0.2, random_state=42)</code>，测试集从未参与拟合。</li>
+          <li>该数字<strong>可复现</strong>：我用仓库里的 <code>model.joblib</code> 对同一份 v2 数据重新评估，得到 RMSE 240.0274 / MAE 154.4691 / R² 0.9085，逐位吻合。</li>
+          <li>超参数不是暴力搜出来的：<code>n_estimators=120</code>、<code>max_depth=20</code>、<code>min_samples_leaf=2</code>，属于温和设置，<code>min_samples_leaf=2</code> 本身就是防过拟合的约束。</li>
+        </ul>
+        <p><strong>但要诚实</strong>：这里没有独立的验证集做超参选择，也没有交叉验证。更严格的做法是 <code>TimeSeriesSplit</code> + 验证集选参。这一局限我写在了 <code>ml/README_experiments.md</code> §6。</p>
+        <span class="qa-ref">ml/train.py · test_size=0.2, random_state=42</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>为什么要滤掉 UNITS != "Index" 的行？</summary>
+      <div class="qa-body">
+        <p>因为不同单位的 <code>Data_value</code> <strong>量纲完全不同</strong>：</p>
+        <ul>
+          <li><code>Index</code> —— 指数，典型值几百到几千</li>
+          <li><code>Dollars</code> —— 金额，典型值几百万</li>
+          <li><code>Percent</code> —— 百分比，典型值个位数</li>
+        </ul>
+        <p>如果混在一起训练，模型会用同一套特征去预测几百万和个位数两种目标——它学到的不是"规律"，而是"这一行是哪种单位"。而 <code>UNITS</code> 本身又不是输入特征（过滤后被删掉了），所以模型无从分辨，只能给出一个折中的、对谁都不准的预测。</p>
+        <p>过滤后剩 77,337 行，目标值落在同一量纲，模型才可能学到真正的规律。</p>
+        <span class="qa-ref">ml/data_pipeline.py · select_target_units · TARGET_UNITS = "Index"</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>为什么最后要删掉 MAGNITUDE 列？</summary>
+      <div class="qa-body">
+        <p>这是过滤带来的<strong>连带结果</strong>，不是独立决定。</p>
+        <p><code>MAGNITUDE</code> 原本标记数值的量级（例如"千"、"百万"）。一旦只保留 <code>UNITS == "Index"</code> 的行，几乎所有 Index 值的量级标记都变成同一个值（<code>0</code>），这一列就<strong>塌缩成常量</strong>。</p>
+        <p>常量列对模型零信息量，却会在 one-hot 编码后多出一个全 1 的列——纯噪声。所以我写了通用的 <code>drop_constant_columns(min_unique=2)</code>，它不是专门针对 MAGNITUDE 硬编码的，而是自动丢弃任何唯一值少于 2 的列。</p>
+        <span class="qa-ref">ml/data_pipeline.py · drop_constant_columns</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>为什么删 Series_reference 和 Series_title_5？</summary>
+      <div class="qa-body">
+        <p>两个不同的理由：</p>
+        <ul>
+          <li><strong><code>Series_reference</code> 是数据泄漏</strong>。它是每个序列的唯一 ID（如 <code>OTVA.SEA2AA1</code>）。如果保留，模型会退化成"查表"——记住每个 ID 对应的数值，在训练集上表现极好，但在新序列上完全失效。这属于典型的 <em>target leakage</em>。</li>
+          <li><strong><code>Series_title_5</code> 几乎全空</strong>。它不携带可用于预测的信息，留着一个几乎全 <code>Unknown</code> 的类别列只会增加维度。</li>
+        </ul>
+        <span class="qa-ref">ml/data_pipeline.py · LEAKY_COLUMNS / DROP_COLUMNS</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>DVC 和 Git 各自负责什么？为什么不都用 Git？</summary>
+      <div class="qa-body">
+        <p>职责切分：</p>
+        <ul>
+          <li><strong>Git</strong> 管<strong>代码与指针</strong>。一个 <code>.dvc</code> 文件只有 6 行（md5 + size + path），体积可忽略。</li>
+          <li><strong>DVC</strong> 管<strong>数据本体</strong>。23 MB 的原始 CSV 和 16 MB 的清洗 CSV 存在 Azure Blob 上。</li>
+        </ul>
+        <p>不都放 Git 的原因：Git 的存储模型是"每个版本完整保存一份"，二进制大文件每次改动都会让仓库体积翻倍，且 clone 会变得极慢。即使后来有 Git LFS，它也缺乏"数据版本与代码版本绑定"的语义。</p>
+        <p>DVC 的价值在于：<code>.dvc</code> 指针里的 md5 <strong>由文件内容算出</strong>，改一个字节就变，无法伪造。这就把"数据版本"变成了一个可校验的标识符，能直接写进 MLflow 的 <code>data_dvc_hash</code> 参数。</p>
+        <span class="qa-ref">.dvc/config · data/*/*.dvc · ml/train.py · dvc_hash()</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>为什么把 MLflow 从 requirements.txt 移出去？</summary>
+      <div class="qa-body">
+        <p>因为<strong>训练和推理需要的依赖不同</strong>，而镜像只需要推理那部分。</p>
+        <div class="table-scroll" style="margin:10px 0">
+          <table>
+            <thead><tr><th>文件</th><th>内容</th><th>用途</th></tr></thead>
+            <tbody>
+              <tr><td><code>requirements.txt</code></td><td>fastapi, uvicorn, pydantic, pandas, numpy, scikit-learn, joblib</td><td>运行时（进镜像）</td></tr>
+              <tr><td><code>requirements-dev.txt</code></td><td>上面 + pytest, httpx, ruff</td><td>CI 与本地测试</td></tr>
+              <tr><td><code>requirements-train.txt</code></td><td>上面 + mlflow, pyyaml</td><td>训练</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>MLflow 及其传递依赖（alembic、sqlalchemy、flask、gunicorn 等）约 200 MB，推理时一行都不用。<strong>分离后镜像从约 400 MB 降到 181 MB</strong>。</p>
+        <span class="qa-ref">requirements*.txt · Dockerfile</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>为什么模型文件要提交进 Git，而不是用 DVC 管？</summary>
+      <div class="qa-body">
+        <p>这是被 CI 的约束反推出来的决定：</p>
+        <ul>
+          <li>CI 里<strong>没有训练数据</strong>——DVC 拉取需要 Azure SAS 令牌，把令牌塞进 CI 是安全风险。</li>
+          <li>CI 里<strong>没有 MLflow 服务器</strong>——从 Registry 拉模型需要额外的服务依赖。</li>
+          <li>但 CI 必须执行 <code>docker build</code>，而 <code>Dockerfile</code> 里有 <code>COPY models/ ./models/</code>。若产物不在仓库里，构建会直接失败。</li>
+        </ul>
+        <p>所以：<strong>把 15 MB 的产物随仓库走</strong>，是让 CI 能构建出"真能服务"的镜像的最简单办法。代价是仓库多了 15 MB，但这个代价远小于在 CI 里配置 Azure 凭据和 MLflow 服务的复杂度。</p>
+        <p>压缩手段：<code>joblib.dump(..., compress=3)</code> 把 46.5 MB 压到 14.6 MB。</p>
+        <span class="qa-ref">ml/train.py · joblib.dump · .gitignore（只忽略 *.pkl / *.skops）</span>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================= 12 QA CODE ================= -->
+<section id="qa-code">
+  <h2><span class="num">12</span>答辩问答 · 代码实现</h2>
+
+  <div class="qa-group">
+    <details class="qa">
+      <summary>为什么用 lifespan 而不是 @app.on_event("startup")？</summary>
+      <div class="qa-body">
+        <p><code>@app.on_event</code> 在 FastAPI 中已被标记为弃用（deprecated），官方推荐用 <code>lifespan</code> 上下文管理器。</p>
+        <p>除了"不过时"，<code>lifespan</code> 的结构优势是<strong>启动与关闭的代码在同一个函数里</strong>：<code>yield</code> 之前是启动逻辑，之后是清理逻辑。这样资源的获取与释放不会被拆散在两个装饰器里，读代码时能一眼看出配对关系。</p>
+        <p>本项目目前只在 <code>yield</code> 前加载模型，没有清理逻辑；但如果将来要加连接池或后台任务，<code>lifespan</code> 是唯一正确的挂载点。</p>
+        <span class="qa-ref">app/main.py · lifespan</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>lifespan 里为什么捕获 FileNotFoundError，而不让进程崩溃？</summary>
+      <div class="qa-body">
+        <p>这是<strong>可观测性优先于快速失败</strong>的取舍。</p>
+        <p>如果容器启动时 <code>model.joblib</code> 缺失：</p>
+        <ul>
+          <li><strong>崩溃式</strong>：进程退出 → 容器重启 → 再退出，形成重启循环。在 <code>docker logs</code> 里只能看到反复的一小段堆栈，很难判断根因。</li>
+          <li><strong>降级式</strong>（本项目的做法）：进程活着，<code>/health</code> 返回 <code>model_loaded: false</code>，<code>/predict</code> 返回 503。运维可以 <code>curl /health</code> 立刻看出"服务在，但模型没加载"，再去查日志里的 <code>model artifact missing: …</code>。</li>
+        </ul>
+        <p>关键区别：<strong>503 的语义是"我能响应，但暂时不能服务"，这比 connection refused 更准确地描述了故障状态</strong>。生产环境里健康检查也能据此把该实例从负载均衡摘掉，而不是让整个容器反复重启。</p>
+        <span class="qa-ref">app/main.py · lifespan · app/main.py · predict 的 ModelNotLoadedError 分支</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>_estimator_name 为什么要取 named_steps 的最后一项？</summary>
+      <div class="qa-body">
+        <p>因为 <code>type(pipeline).__name__</code> 对任何 sklearn 管线都返回字符串 <code>"Pipeline"</code>——这对调用方毫无信息量。</p>
+        <p>真正有用的是<strong>最后一步</strong>是什么估计器。本项目的管线是 <code>Pipeline([("prep", ColumnTransformer), ("model", RandomForestRegressor)])</code>，所以 <code>list(named_steps.values())[-1]</code> 拿到 <code>RandomForestRegressor</code>。</p>
+        <p>这个 bug 是<strong>真跑容器才发现的</strong>：单测不会检查 <code>/health</code> 的 <code>model_type</code> 具体值，而 <code>TestClient</code> 也不暴露这个问题。只有 <code>docker run</code> 后 <code>curl /health</code> 才看到它显示 <code>Pipeline</code>。</p>
+        <span class="qa-ref">app/model_loader.py · _estimator_name</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>to_frame() 的列顺序为什么"不影响正确性"？</summary>
+      <div class="qa-body">
+        <p>因为 <code>ColumnTransformer</code> 在构造时接收的是<strong>列名字符串列表</strong>，它在 <code>transform</code> 时按<strong>列名</strong>去 DataFrame 里取值，而不是按位置切列。</p>
+        <pre><code>ColumnTransformer(
+    transformers=[
+        ("cat", OneHotEncoder(handle_unknown="ignore",
+                              sparse_output=False), categoricals),
+        ("num", "passthrough", NUMERIC_FEATURES),
+    ],
+    remainder="drop",
+)</code></pre>
+        <p>实测验证：模型期望的顺序是 <code>['STATUS', …, 'year', 'month']</code>，API 发出的是 <code>['year', 'month', 'STATUS', …]</code>，两者顺序不同，但<strong>预测结果正确</strong>（1366.6051630513346，与容器返回值完全一致）。</p>
+        <p>不过我仍然保持顺序确定，因为：① 测试可以断言它，② 未来若有人把 <code>ColumnTransformer</code> 改成位置索引，diff 里能立刻看到变化。</p>
+        <span class="qa-ref">app/schemas.py · to_frame() · ml/train.py · build_preprocessor()</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>predict() 里为什么要检查 len(frame) != 1？</summary>
+      <div class="qa-body">
+        <p>这是一个<strong>防御性断言</strong>，把"意外"变成"立刻报错"。</p>
+        <p>接口契约是"一次预测一个观测"。如果上游误传了多行，<code>pipeline.predict()</code> 会静默返回一个数组，而 <code>[0]</code> 只取第一个——<strong>调用方会以为拿到了正确结果，实际上丢弃了其余行</strong>。这属于最难排查的一类 bug：没有异常、没有日志、结果看起来合理。</p>
+        <p>显式检查把它变成 <code>ValueError: expected exactly 1 row, got N</code>，问题在源头暴露。</p>
+        <span class="qa-ref">app/model_loader.py · predict() · tests/integration/test_model_loader.py::test_predict_rejects_multi_row_input</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>handle_unknown="ignore" 起什么作用？</summary>
+      <div class="qa-body">
+        <p>它决定了"预测时遇到训练中没见过的类别"会发生什么。</p>
+        <div class="table-scroll" style="margin:10px 0">
+          <table>
+            <thead><tr><th>设置</th><th>行为</th><th>对本 API 的影响</th></tr></thead>
+            <tbody>
+              <tr><td><code>"error"</code>（默认）</td><td>抛异常</td><td>用户传一个训练集里没有的 <code>Series_title_2</code> 就 500</td></tr>
+              <tr><td><code>"ignore"</code>（本项目的选择）</td><td>该类别编码为全零</td><td>服务照常返回预测，只是该类别不贡献信号</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>选择 <code>"ignore"</code> 的理由：这是一个对外 API，用户的输入不受我们控制。为一个未见过的商品分类而 500，体验很差，而且"这个类别没见过"本身不构成错误——可能是新发布的统计口径。</p>
+        <p>代价是模型对该行"知道得更少"，预测更接近整体均值。这是有意识的降级，不是缺陷。测试 <code>test_unseen_category_does_not_raise</code> 专门覆盖这一行为。</p>
+        <span class="qa-ref">ml/train.py · build_preprocessor · tests/integration/test_model_loader.py</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>dvc_hash() 里那句 strip("- ") 是干什么的？</summary>
+      <div class="qa-body">
+        <p>因为 DVC 指针文件的 <code>md5</code> 行是 YAML 列表项，<strong>行首带列表标记</strong>：</p>
+        <pre><code>outs:
+- md5: a0f682da4b534942450d8f30ba6cca1d
+  size: 15863981
+  path: clean_v2.csv</code></pre>
+        <p>如果直接判断 <code>line.startswith("md5:")</code>，永远匹配不到，函数会返回 <code>"unknown"</code> 并被记进 MLflow——数据版本就丢了。</p>
+        <p>我在开发时确实遇到了这个问题：MLflow 里 <code>data_dvc_hash</code> 显示 <code>unknown</code>。修复方式是把每行先 <code>strip()</code>，若以 <code>"- "</code> 开头则剥掉这两个字符，再做前缀判断。</p>
+        <span class="qa-ref">ml/train.py · dvc_hash()</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>为什么测试里要 reload()？不能直接 load() 吗？</summary>
+      <div class="qa-body">
+        <p><code>ModelHolder</code> 是<strong>模块级单例</strong>——<code>model_holder = ModelHolder()</code> 在模块导入时创建一次，整个进程共享。</p>
+        <p>测试需要把它指向不同的临时产物（tiny model、不存在的路径、带 summary 的产物），如果只有 <code>load()</code>，第二次调用会覆盖第一次的状态，但<strong>旧的 <code>_data_version</code> 等字段可能残留</strong>，导致测试之间互相污染。</p>
+        <p><code>reload()</code> 先把三个字段全部置 <code>None</code> 再 <code>load()</code>，保证状态干净。这也让测试可以断言"从一个已加载状态切换到失败状态"时的行为。</p>
+        <span class="qa-ref">app/model_loader.py · reload() · tests/integration/test_model_loader.py</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>为什么 random_state 固定为 42？</summary>
+      <div class="qa-body">
+        <p>为了让<strong>结果可复现</strong>，这是 MLOps 的基本要求。</p>
+        <p>不确定性来自三处：<code>train_test_split</code> 的切分、RandomForest 的 bootstrap 抽样与特征子采样。三处都用 <code>RANDOM_STATE = 42</code> 固定后：</p>
+        <ul>
+          <li>任何人 clone 仓库、<code>dvc pull</code>、<code>python -m ml.train</code>，都能得到<strong>完全相同的指标</strong>（RMSE 240.0274 等）。</li>
+          <li>MLflow 里两个 run 的指标可以直接对比——如果种子不同，0.9085 与 0.9101 的差异可能只是随机波动，无法判断改动是否真的有效。</li>
+        </ul>
+        <p>代价是失去了"多次运行看方差"的信息，但对课程项目来说可复现性更重要。</p>
+        <span class="qa-ref">ml/train.py · RANDOM_STATE = 42</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>compress=3 是什么？为什么不用 compress=9？</summary>
+      <div class="qa-body">
+        <p><code>joblib.dump(..., compress=N)</code> 中 N 是 zlib 压缩级别（0=不压缩，9=最大压缩）。</p>
+        <div class="table-scroll" style="margin:10px 0">
+          <table>
+            <thead><tr><th>级别</th><th>体积</th><th>加载耗时</th><th>适用</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>46.5 MB</td><td>最快</td><td>本地实验</td></tr>
+              <tr><td><strong>3</strong></td><td><strong>14.6 MB</strong></td><td>可接受</td><td><strong>本项目</strong>：进 Git、进镜像</td></tr>
+              <tr><td>9</td><td>约 13 MB</td><td>明显变慢</td><td>不划算</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>选 3 是因为它在"体积缩小 3 倍"和"解压速度"之间取得平衡。模型只在<strong>启动时加载一次</strong>，所以解压耗时只影响冷启动；但体积直接影响 Git 仓库和镜像大小，这是持续成本。</p>
+        <span class="qa-ref">ml/train.py · joblib.dump(forest_pipeline, model_path, compress=3)</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>skops_trusted_types 是干什么的？为什么必须传？</summary>
+      <div class="qa-body">
+        <p>MLflow 3.x 改用 <strong>skops</strong> 而非 pickle 来序列化 sklearn 模型，因为 pickle 反序列化会执行任意代码，不安全。</p>
+        <p>skops 默认只信任一个白名单类型集合。<code>RandomForestRegressor</code> 内部的 <code>sklearn.tree._tree.Tree</code> 不在默认白名单里，于是 <code>log_model</code> 报错：</p>
+        <pre><code>Untrusted types found: ['sklearn.tree._tree.Tree']</code></pre>
+        <p>显式传入 <code>skops_trusted_types=["sklearn.tree._tree.Tree"]</code> 等于声明"我知道这个类型是安全的"。因为我们是在<strong>自己的进程内刚训练出来</strong>的模型，不是在加载外部文件，所以这个信任是合理的。</p>
+        <span class="qa-ref">ml/train.py · TRUSTED_SKOPS_TYPES · run_experiment()</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>extra="forbid" 和 str_strip_whitespace 各解决什么问题？</summary>
+      <div class="qa-body">
+        <p><strong><code>extra="forbid"</code></strong>：pydantic 默认<em>忽略</em>多余字段。这意味着客户端把 <code>year</code> 错拼成 <code>yaer</code> 时，请求会"成功"，但 <code>year</code> 用了默认值或报缺失——错误信息指向缺失字段，而不是拼写错误，用户很难定位。</p>
+        <p>设为 <code>forbid</code> 后，多余字段直接 422，并明确指出 <code>yaer</code> 是多余的。这符合"快速失败"原则。</p>
+        <p><strong><code>str_strip_whitespace=True</code></strong>：自动裁剪字符串首尾空格，使 <code>"  FINAL  "</code> 与 <code>"FINAL"</code> 等价。否则空格会进入 one-hot 编码，变成一个<strong>训练集里从未出现过的新类别</strong>，被 <code>handle_unknown="ignore"</code> 静默处理为零贡献——用户不会收到任何错误，但预测质量下降了。</p>
+        <span class="qa-ref">app/schemas.py · PredictRequest.model_config</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>为什么把公共 Logger 的配置写成 if not logger.handlers？</summary>
+      <div class="qa-body">
+        <p>为了防止<strong>重复挂载 handler</strong> 导致同一条日志被打印多次。</p>
+        <p>模块级代码在 import 时执行。在测试场景里，如果模块被<strong>重新导入</strong>（例如 <code>importlib.reload</code>，或某些测试框架的隔离机制），模块级代码会再跑一遍。如果没有 <code>if not logger.handlers</code> 这层判断，就会再 <code>addHandler</code> 一次，于是同一条 <code>model loaded</code> 会输出两遍、三遍。</p>
+        <p>这是一个典型的"幂等初始化"写法。</p>
+        <span class="qa-ref">app/main.py · logger 初始化</span>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================= 13 QA OPS ================= -->
+<section id="qa-ops">
+  <h2><span class="num">13</span>答辩问答 · 操作与运维</h2>
+
+  <div class="qa-group">
+    <details class="qa">
+      <summary>从零 clone 仓库后，怎么把服务跑起来？</summary>
+      <div class="qa-body">
+        <p>分两种情况。只想跑 API，不需要重新训练：</p>
+        <pre><code>git clone https://github.com/Suck-MyCock/trade-index-mlops.git
+cd trade-index-mlops
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements-dev.txt
+
+# 模型产物已在仓库里，直接起服务
+uvicorn app.main:app --reload</code></pre>
+        <p>或直接用 Docker（连 Python 都不用装）：</p>
+        <pre><code>docker build -t trade-index:local .
+docker run --rm -p 127.0.0.1:8001:8000 -e APP_ENV=local trade-index:local</code></pre>
+        <p><strong>关键点</strong>：<code>models/model.joblib</code> 是提交进 Git 的，所以<strong>不需要 <code>dvc pull</code> 也不需要训练</strong>就能起服务。这是当初决定把产物入库的原因之一。</p>
+        <span class="qa-ref">README.md · Running locally</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>怎么复现某个特定的数据版本？</summary>
+      <div class="qa-body">
+        <pre><code># 查看有哪些版本
+git tag --list
+# data-v1
+# data-v2
+
+# 切换到 v1（分离头指针，因为你只是要看数据，不是要开发）
+git switch --detach data-v1
+
+# 拉取该版本对应的数据
+dvc pull
+
+# 验证确实拿到了 v1
+md5sum data/raw/raw_dataset.csv
+# 应为 42171ec985af1d3aed38f4d6f497030b
+
+# 回到开发分支
+git switch dev</code></pre>
+        <p><strong>为什么用 <code>--detach</code></strong>：标签指向的是历史提交，不是分支头。直接 <code>git switch data-v1</code> 会进入"分离头指针"状态（Git 会提示），显式加 <code>--detach</code> 让意图清楚：我只是临时看这个状态，不会在这里提交。</p>
+        <p><strong>注意</strong>：<code>dvc pull</code> 之后需要再 <code>dvc pull</code> 一次才能回到 v2（切回 dev 后）。</p>
+        <span class="qa-ref">ml/README_data.md · 复现步骤</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>拿到新数据后，怎么重新训练并上线？</summary>
+      <div class="qa-body">
+        <p>完整流程：</p>
+        <ol class="steps">
+          <li>把新数据放到 <code>data/raw/</code>，<code>dvc add</code> 生成新指针（得到新的 md5）</li>
+          <li>若清洗规则要改，编辑 <code>ml/data_pipeline.py</code>，再 <code>python -m ml.data_pipeline</code> 重建 v2</li>
+          <li><code>dvc add data/processed/clean_v2.csv</code> 更新 v2 指针</li>
+          <li><code>python -m ml.train</code> 重新训练。MLflow 会自动记录新的 <code>data_dvc_hash</code></li>
+          <li>在 MLflow UI 里对比新旧 run 的指标，确认有提升</li>
+          <li>提交：代码 + 新的 <code>.dvc</code> 指针 + 新的 <code>model.joblib</code> + 更新的 <code>run_summary.json</code></li>
+          <li>打新标签（如 <code>data-v3</code>），推分支，走 PR → CI → staging → main</li>
+        </ol>
+        <p><strong>关键</strong>：第 6 步必须同时提交 <code>.dvc</code> 指针和模型产物，否则会出现"代码说用 v3，但 CI 里的模型是 v2 训出来的"这种不一致。</p>
+        <span class="qa-ref">ml/README_data.md · ml/train.py</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>怎么看 MLflow 里的实验记录？</summary>
+      <div class="qa-body">
+        <pre><code>python -m mlflow ui --backend-store-uri sqlite:///mlflow.db
+# 浏览器打开 http://127.0.0.1:5000</code></pre>
+        <p><strong>为什么用 <code>python -m mlflow</code> 而不是 <code>mlflow</code></strong>：如果在受限环境里只复制了 Python 包而没有可执行入口（<code>Scripts/mlflow.exe</code>），直接敲 <code>mlflow</code> 会提示"命令不存在"。<code>python -m mlflow</code> 绕过了 PATH 查找。</p>
+        <p><strong>为什么必须指定 <code>--backend-store-uri</code></strong>：MLflow 3.x 已弃用文件后端，不指定会报 <em>"filesystem tracking backend is in maintenance mode"</em> 并拒绝启动。</p>
+        <p>进去后点 <code>tuned-forest</code> run，在 <strong>Parameters</strong> 标签能核对五个必需项：<code>git_commit</code>、<code>data_version</code>、<code>data_dvc_hash</code>、各超参数、<code>train_rows</code>/<code>test_rows</code>。</p>
+        <span class="qa-ref">ml/train.py · --tracking-uri 默认 sqlite:///mlflow.db</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>CI 红了，怎么定位是哪一步出问题？</summary>
+      <div class="qa-body">
+        <p>CI 有 7 个步骤，按失败位置判断：</p>
+        <div class="table-scroll" style="margin:10px 0">
+          <table>
+            <thead><tr><th>失败步骤</th><th>常见原因</th><th>本地复现</th></tr></thead>
+            <tbody>
+              <tr><td>Install dependencies</td><td>requirements 拼写错 / 包版本冲突</td><td><code>pip install -r requirements-dev.txt</code></td></tr>
+              <tr><td>Lint</td><td>未使用导入、行过长、import 未排序</td><td><code>ruff check app ml tests scripts</code></td></tr>
+              <tr><td>Check formatting</td><td>缩进/引号风格不符</td><td><code>ruff format --check app ml tests scripts</code></td></tr>
+              <tr><td>Run tests</td><td>断言失败 / 测试环境差异</td><td><code>pytest -q</code></td></tr>
+              <tr><td>Build Docker image</td><td>Dockerfile 语法 / 缺文件 / 基础镜像拉取失败</td><td><code>docker build -t trade-index:ci .</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>本地复现是第一步</strong>——因为我刻意让 CI 和本地的命令完全一致，所以本地能过通常 CI 也能过；反之本地失败就没必要等 CI。</p>
+        <span class="qa-ref">.github/workflows/ci.yml · pyproject.toml</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>怎么确认 CD 真的用了不同环境的配置？</summary>
+      <div class="qa-body">
+        <p>三个层次的证据：</p>
+        <ol class="steps">
+          <li><strong>日志</strong>：展开 CD 的 <code>Create … .env from secrets</code> 步骤，会看到
+            <code>Generated .env:</code> 加两行 <code>KEY=***</code>。星号是 GitHub 的密钥脱敏，说明值确实被解析并写入了。</li>
+          <li><strong>Deployments 页面</strong>：<code>/deployments</code> 会列出两条独立记录，分别挂在 <code>staging</code> 和 <code>production</code> 环境上。这是 GitHub 层面对"部署到了哪个环境"的记录。</li>
+          <li><strong>运行时</strong>：<code>GET /health</code> 返回的 <code>environment</code> 字段直接来自 <code>APP_ENV</code>，所以容器自己会告诉你它是为哪个环境构建的。</li>
+        </ol>
+        <p><strong>一个副作用值得说明</strong>：因为 <code>APP_ENV</code> 的 Secret 值就是字符串 <code>staging</code>，GitHub 把日志里所有 "staging" 字样都脱敏了，包括镜像 tag 名 <code>trade-index:***</code>。功能上没问题——runner 上的真实 tag 是 <code>trade-index:staging</code>，只是日志可读性受影响。</p>
+        <span class="qa-ref">.github/workflows/cd.yml · app/main.py · APP_ENV</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>dvc pull 失败怎么排查？</summary>
+      <div class="qa-body">
+        <p>按可能性排序：</p>
+        <ol class="steps">
+          <li><strong>没有 <code>.dvc/config.local</code></strong> —— SAS 令牌在那里面，且它被 gitignore 了，clone 后不存在。需要手动创建或从课程 PDF 里复制。</li>
+          <li><strong>令牌过期</strong> —— 当前令牌有效期至 2026-12-12。用 <code>dvc status --cloud</code> 会报 403。</li>
+          <li><strong>网络/代理</strong> —— Azure Blob 在部分网络下需要代理。可先 <code>dvc status --cloud -v</code> 看详细请求。</li>
+          <li><strong>缓存目录权限</strong> —— Windows 上 DVC 默认写 <code>C:\ProgramData\iterative\dvc</code>，受限账户会失败。可设环境变量 <code>DVC_SITE_CACHE_DIR</code> 指向可写目录。</li>
+        </ol>
+        <p>我自己在验证时就撞上了第 4 条——沙箱无法写 <code>C:\ProgramData</code>，只能用 <code>DVC_SITE_CACHE_DIR</code> 绕过。<strong>用户环境没有这个限制</strong>。</p>
+        <span class="qa-ref">.dvc/config · .dvc/config.local</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>怎么确认镜像里的模型和本地的是同一个？</summary>
+      <div class="qa-body">
+        <p>用<strong>确定性预测</strong>做指纹比对：</p>
+        <pre><code># 本地
+python -c "from app.model_loader import model_holder; \
+model_holder.load(); print(model_holder.predict(...))"
+
+# 容器
+curl -X POST localhost:8001/predict -d '{...}'</code></pre>
+        <p>本项目实测：本地与容器都返回 <code>1366.6051630513346</code>，逐位相同。因为 RandomForest 在相同输入上的预测是确定性的（没有随机性参与 predict），所以这个比对是可靠的。</p>
+        <p>另一个角度：比对 <code>/health</code> 里的 <code>model_type</code> 和 <code>data_version</code>——它们读自镜像内的 <code>run_summary.json</code>，能证明容器加载的是正确的那份产物。</p>
+        <span class="qa-ref">app/model_loader.py · predict()</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>如果忘了开 Docker Desktop，会看到什么错误？</summary>
+      <div class="qa-body">
+        <pre><code>ERROR: failed to connect to the docker API at
+npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct
+and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine:
+The system cannot find the file specified.</code></pre>
+        <p><strong>这不是 Dockerfile 的问题，也不是网络的问题</strong>——是引擎压根没起来。判断方法：</p>
+        <pre><code>docker info --format '{{.ServerVersion}}'</code></pre>
+        <p>有版本号输出才算就绪。报同样的 npipe 错误就是引擎没起，需要启动 Docker Desktop 并等托盘变绿（约 30–60 秒）。</p>
+        <p>我一开始误判为网络问题，让用户换了 PyPI 镜像源——这是错的诊断。换源只在 pip 步骤慢时有用，与引擎未启动无关。</p>
+        <span class="qa-ref">部署阶段实际遇到的故障</span>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================= 14 QA TRAP ================= -->
+<section id="qa-trap">
+  <h2><span class="num">14</span>答辩问答 · 边界与故障</h2>
+
+  <div class="qa-group">
+    <details class="qa">
+      <summary>如果 API 收到训练时从未见过的类别，会怎样？</summary>
+      <div class="qa-body">
+        <p>会正常返回预测，不会报错。<strong>这是刻意设计的行为。</strong></p>
+        <p>链路：<code>OneHotEncoder(handle_unknown="ignore")</code> 把未知类别编码为全零向量 → 该类别对预测零贡献 → 预测值更接近整体均值。</p>
+        <p>测试 <code>test_unseen_category_does_not_raise</code> 和 <code>test_predict_unseen_category_is_accepted</code> 覆盖了这条路径。</p>
+        <p><strong>为什么不让它报错</strong>：这是对外 API，用户传入的商品分类不受我们控制。新发布的统计口径、拼写差异、甚至大小写变化都可能产生"未知类别"。为一个未来可能出现的新分类而 500，是过度严格。降级预测比拒绝服务更合理。</p>
+        <p><strong>代价</strong>：用户不知道自己的输入"部分无效"。若要改进，可以在响应里加一个 <code>unknown_categories</code> 字段列出被忽略的值——这是一个合理的后续增强。</p>
+        <span class="qa-ref">ml/train.py · build_preprocessor · tests/integration/test_model_loader.py</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>如果 model.joblib 损坏或缺失，服务会怎样？</summary>
+      <div class="qa-body">
+        <div class="table-scroll" style="margin:10px 0">
+          <table>
+            <thead><tr><th>情况</th><th>启动</th><th><code>/health</code></th><th><code>/predict</code></th></tr></thead>
+            <tbody>
+              <tr><td>文件<strong>缺失</strong></td><td>正常启动，日志记录 error</td><td>200，<code>model_loaded: false</code></td><td><strong>503</strong></td></tr>
+              <tr><td>文件<strong>损坏</strong>（joblib 读不出来）</td><td><strong>启动失败</strong>（异常未被捕获）</td><td>—</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>缺失</strong>的处理是刻意的：<code>lifespan</code> 只捕获 <code>FileNotFoundError</code>，因为那是可预期的运维问题（忘记 <code>dvc pull</code>、<code>.dockerignore</code> 误排除）。</p>
+        <p><strong>损坏</strong>不捕获，因为那说明产物本身有问题（磁盘损坏、版本不兼容），应当让部署直接失败而不是带着一个坏模型上线。我在测试里只覆盖了"缺失"，因为构造损坏的 joblib 需要 mock。</p>
+        <span class="qa-ref">app/main.py · lifespan（只捕获 FileNotFoundError）</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>如果数据格式变了（比如 Period 变成 YYYY-MM），流水线会怎样？</summary>
+      <div class="qa-body">
+        <p><strong>会静默产出一个空数据集</strong>，这是当前实现的弱点。</p>
+        <p><code>add_time_features</code> 用正则 <code>^(\d{4})\.(\d{2})$</code> 解析 <code>Period</code>。格式改成 <code>2020-06</code> 后匹配失败 → <code>year</code>/<code>month</code> 全是 NaN → <code>dropna(subset=NUMERIC_FEATURES + [TARGET])</code> 把<strong>所有行</strong>丢掉 → 输出一个 0 行的 CSV。</p>
+        <p>下游 <code>ml/train.py</code> 会因为没有训练样本而失败（<code>train_test_split</code> 报错），所以不会静默产出一个坏模型。<strong>但错误信息会指向训练而不是数据格式</strong>，排查成本较高。</p>
+        <p><strong>更好的做法</strong>：在 <code>build_v2_dataset</code> 末尾加一道断言——若输出行数少于输入行的某个比例（例如 50%），直接抛异常并说明"可能是 Period 格式变更"。这是我目前知道但未实现的一个改进点。</p>
+        <span class="qa-ref">ml/data_pipeline.py · add_time_features / build_v2_dataset</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>两个 PR 同时改同一个文件，会冲突吗？</summary>
+      <div class="qa-body">
+        <p>会，但分支保护里的 <strong>"Require branches to be up to date before merging"</strong> 让冲突在合并前就暴露。</p>
+        <p>场景：PR-A 和 PR-B 都改了 <code>README.md</code>。PR-A 先合并，此时 PR-B 的分支已经落后于目标分支，GitHub 会把 PR-B 标为 <em>"This branch is out of date"</em>，Merge 按钮变灰。</p>
+        <p>处理方式：在 PR-B 的本地分支上 <code>git merge origin/dev</code>（或 <code>git rebase</code>），解决冲突后 push。CI 会重新跑，通过后才能合并。</p>
+        <p><strong>为什么不用 <code>git push -f</code> 强推</strong>：强推会覆盖别人的提交，在多人协作里是破坏性操作。项目里我明确禁止了这条路径——唯一一次需要"重置"是初始 clone 时远端有 README，我用的是 <code>git fetch + git reset --hard origin/dev</code>，而不是 <code>-f</code>。</p>
+        <span class="qa-ref">GitHub 分支保护设置</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>如果 Docker 构建卡在 pip 安装，怎么办？</summary>
+      <div class="qa-body">
+        <p>大陆网络访问 PyPI 慢时，Dockerfile 已经预留了镜像源参数：</p>
+        <pre><code>docker build \
+  --build-arg PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple \
+  -t trade-index:local .</code></pre>
+        <p><strong>注意</strong>：开了代理<em>不一定</em>能加速 Docker 构建——容器的网络走 WSL2 的独立网络栈，默认不继承 Windows 代理。要么在 Docker Desktop 的 Settings → Resources → Proxies 里配代理，要么直接用国内镜像源（清华源是 HTTPS，不需要 <code>--trusted-host</code>）。</p>
+        <p>CI 里不需要这个参数：GitHub Actions 的 runner 在境外，直连 PyPI 很快（实测整个 pip 步骤约 36 秒）。</p>
+        <span class="qa-ref">Dockerfile · ARG PIP_INDEX_URL</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>如果 .dockerignore 误排除了模型，会怎样？</summary>
+      <div class="qa-body">
+        <p>构建会<strong>失败</strong>，而不是做出一个坏镜像。因为 <code>Dockerfile</code> 里有 <code>COPY models/ ./models/</code>，如果 <code>models/</code> 被完全排除，Docker 会报：</p>
+        <pre><code>COPY failed: file not found in build context</code></pre>
+        <p>这是一个好的失败模式——<strong>构建期暴露，而不是运行期</strong>。</p>
+        <p>更隐蔽的情况是：<code>models/</code> 存在但 <code>model.joblib</code> 被单独排除（例如写了 <code>*.joblib</code>）。这时构建会成功，但容器启动后 <code>/health</code> 返回 <code>model_loaded: false</code>，<code>/predict</code> 返回 503。</p>
+        <p>所以我在验收脚本里加了一条检查：确认 <code>models/model.joblib</code> 不被 <code>.dockerignore</code> 的规则命中。我也实测过 <code>docker run … ls models/</code> 确认文件在镜像里。</p>
+        <span class="qa-ref">.dockerignore · scripts/verify_project.py</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>如果 SAS 令牌过期了，哪些功能会坏？</summary>
+      <div class="qa-body">
+        <p><strong>只有 DVC 远程操作会坏</strong>，其他一切正常：</p>
+        <div class="table-scroll" style="margin:10px 0">
+          <table>
+            <thead><tr><th>功能</th><th>是否受影响</th><th>原因</th></tr></thead>
+            <tbody>
+              <tr><td><code>dvc pull</code> / <code>dvc push</code></td><td><strong>是</strong>（403）</td><td>需要 Azure 认证</td></tr>
+              <tr><td>API 服务</td><td>否</td><td><code>model.joblib</code> 在仓库里</td></tr>
+              <tr><td>CI</td><td>否</td><td>不碰 DVC</td></tr>
+              <tr><td>CD</td><td>否</td><td>不碰 DVC</td></tr>
+              <tr><td><code>pytest</code></td><td>否</td><td>测试用合成数据或已下载的数据</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>这正是"模型产物入库"这个决定的额外收益</strong>：即使数据层完全不可用，服务层和交付层依然健康。</p>
+        <span class="qa-ref">.dvc/config.local · 有效期 2026-12-12</span>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================= 15 QA CHALLENGE ================= -->
+<section id="qa-challenge">
+  <h2><span class="num">15</span>答辩问答 · 追问与反思</h2>
+
+  <div class="qa-group">
+    <details class="qa">
+      <summary>你说 96 个测试"超出要求"，但数量多就代表质量好吗？</summary>
+      <div class="qa-body">
+        <p>不能直接等同，所以我更愿意强调<strong>覆盖了哪些边界</strong>，而不是数字。</p>
+        <p>具体看：<code>test_schemas.py</code> 的 32 个不是"把同一个正常用例重复 32 次"，而是围绕 <code>year</code>、<code>month</code>、9 个字段、多余字段、错误类型这些<strong>不同的失败模式</strong>各写一组参数化用例。</p>
+        <p>更关键的是<strong>两个高价值的测试是我主动补的</strong>：</p>
+        <ul>
+          <li><code>test_data_pipeline.py</code>（31 个）—— 我在审计时发现数据清洗逻辑<strong>零覆盖</strong>，这是整个项目最核心的业务逻辑，反而最该被测试。</li>
+          <li><code>test_clean_is_idempotent_on_already_clean_data</code> —— 验证流水线可重跑，这是"能反复使用"的前提。</li>
+        </ul>
+        <p><strong>诚实的短板</strong>：我没有对 <code>ml/train.py</code> 做单元测试。理由是它的核心逻辑（拟合、评估）由 sklearn 保证，而"记录到 MLflow"需要 mock 整个 MLflow，投入产出比低。真要测，更适合用集成测试验证"跑完一次训练后 MLflow 里真的有记录"。</p>
+        <span class="qa-ref">tests/ · 审计记录第 5 条</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>这个项目的哪一部分你觉得最脆弱？</summary>
+      <div class="qa-body">
+        <p><strong>数据格式变更的检测。</strong></p>
+        <p>当前 <code>build_v2_dataset</code> 会"尽力而为"：解析不了的行就丢掉，不报错也不告警。如果上游 Stats NZ 改了 <code>Period</code> 的格式，或者改了某个列的命名，流水线会静默产出一个缩水甚至空的数据集。虽然后续训练会失败（所以不会上线坏模型），但错误信息会指向训练而不是数据，排查成本高。</p>
+        <p>正确做法是加一道<strong>数据契约检查</strong>：保留率的断言、必需列的断言、值域分布的断言。这也是现实工业流水线（如 Great Expectations）在做的事。</p>
+        <p>我把这条写进了答辩准备的"陷阱题"，因为它是我确实知道、也确实没做的一件事。<strong>承认边界比假装没有边界更可信。</strong></p>
+        <span class="qa-ref">14 边界与故障 · 数据格式变更</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>如果给你更多时间，你会优先做什么？</summary>
+      <div class="qa-body">
+        <p>按<strong>风险 × 收益</strong>排序：</p>
+        <div class="table-scroll" style="margin:10px 0">
+          <table>
+            <thead><tr><th>优先级</th><th>改进</th><th>解决什么</th></tr></thead>
+            <tbody>
+              <tr><td><strong>P0</strong></td><td>数据契约检查（必需列、保留率、值域）</td><td>防止静默产出缩水数据集</td></tr>
+              <tr><td><strong>P0</strong></td><td>时间序列切分（<code>TimeSeriesSplit</code>）</td><td>当前随机切分可能高估泛化能力</td></tr>
+              <tr><td>P1</td><td>镜像推送到 GHCR + 部署步骤 + 健康门禁</td><td>让 CD 真正"部署"而不只是"构建"</td></tr>
+              <tr><td>P1</td><td>MLflow Registry 阶段流转（Staging → Production）</td><td>让"哪个模型是生产"由系统回答，而非 markdown 文件</td></tr>
+              <tr><td>P2</td><td>输入输出监控（预测分布漂移告警）</td><td>模型衰减时能提前发现</td></tr>
+              <tr><td>P2</td><td>响应中返回 <code>unknown_categories</code></td><td>让用户知道哪些输入未被模型识别</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>前两条是 P0，因为它们影响的是<strong>结论的可信度</strong>；后四条是工程完善度，不影响当前结论的正确性。</p>
+        <span class="qa-ref">09 已知局限 · 15 追问</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>R² = 0.9085 会不会太高了，像是数据泄漏？</summary>
+      <div class="qa-body">
+        <p>这个怀疑很合理，我核查过三处最可能的泄漏源：</p>
+        <ol class="steps">
+          <li><strong><code>Series_reference</code> 已删除</strong> —— 它是每行的唯一 ID，保留会导致"查表"式记忆。<code>LEAKY_COLUMNS = ["Series_reference"]</code> 就是为它设的。</li>
+          <li><strong>目标列未混入特征</strong> —— 特征列表是 <code>NUMERIC_FEATURES + CATEGORICAL_FEATURES</code>，<code>Data_value</code> 不在其中。<code>load_dataset</code> 里也显式 <code>feature_frame = frame[NUMERIC + categoricals]</code>。</li>
+          <li><strong>没有用未来信息</strong> —— 特征是"季度 + 序列元数据"，都是该观测自身已有的属性，不包含其他季度的数值。</li>
+        </ol>
+        <p><strong>那为什么还这么高？</strong>因为这是一个"同一序列在不同季度上重复出现"的数据集。同一组元数据（Subject + Group + Series_title_1..4）会在多个季度反复出现，模型实际上在学"这个序列的典型水平"，而季度间的波动相对较小。所以 R² 高是合理的。</p>
+        <p><strong>真正的隐患不是泄漏，而是评估方式</strong>：随机切分会让同一序列的不同季度同时出现在训练集和测试集里，模型"见过"这个序列。更严格的做法是<strong>按序列分组切分</strong>（<code>GroupKFold</code>），看模型对<strong>全新序列</strong>的泛化能力。我预计那样 R² 会明显下降——这才是诚实的泛化估计。</p>
+        <p>这个分析我写在了 <code>ml/README_experiments.md</code> §6 的局限里。</p>
+        <span class="qa-ref">ml/data_pipeline.py · LEAKY_COLUMNS · ml/train.py · load_dataset</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>为什么两轮审计都在同一份"验收脚本"上翻车？这说明什么？</summary>
+      <div class="qa-body">
+        <p>因为它<strong>是唯一没有测试覆盖的代码</strong>。</p>
+        <p>应用有 96 个测试，但 <code>scripts/verify_project.py</code> 只有它自己——而没有测试去验证"验证器本身是否正确"。这是经典的 <em>quis custodiet</em> 问题。</p>
+        <p>三次失败的性质：</p>
+        <ul>
+          <li>GBK 解码崩溃 → 异常在子线程里被吞，检查<strong>假通过</strong></li>
+          <li>自检出自身 → 正则字面量被判为泄漏，检查<strong>假失败</strong></li>
+          <li>路径分隔符 → Windows 返回 <code>\</code>，4 项检查<strong>假失败</strong></li>
+        </ul>
+        <p><strong>共同教训</strong>：一个永远返回 PASS 的检查比没有检查更危险，因为它提供虚假的安全感。修复后我做了两件事来降低再犯风险——① 把脚本纳入 CI 的 ruff 检查范围；② 让检查项在失败时打印具体证据（如 <code>['scripts/verify_project.py']</code>），而不是只报 FAIL。</p>
+        <p>更深一层的反思：<strong>如果时间允许，验收脚本本身也应该有测试</strong>——用 fixture 构造"已知有缺陷的仓库"，断言脚本能正确报错。这是我没有做的。</p>
+        <span class="qa-ref">10 审计记录 · 第 1–4 条</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>CD 只构建镜像不推送，这算"自动化部署"吗？</summary>
+      <div class="qa-body">
+        <p>严格说，<strong>算"自动化构建"多于"自动化部署"</strong>。我不打算含糊这一点。</p>
+        <p><strong>符合手册的部分</strong>：手册原文明确写的是 <em>"uses GitHub secrets … to create a staging .env file, then build the staging Docker image"</em>——要求止于构建镜像。这部分我完整实现了，且两个环境确实用了各自的 Secrets。</p>
+        <p><strong>不符合"真实部署"的部分</strong>：镜像只存在于 runner 的临时磁盘上，工作流结束后就没了。没有推送到 registry，也没有在服务器上启动容器。</p>
+        <p><strong>为什么这样选择</strong>：推送需要 registry 凭据（GHCR 需要 <code>GITHUB_TOKEN</code> 的 <code>packages: write</code> 权限），启动需要目标主机。这些超出课程范围，而且引入真实凭据会增加"提交了不该提交的东西"的风险。</p>
+        <p><strong>但我把补齐路径写清楚了</strong>：<code>DEPLOYMENT.md</code> §7 列出了完整方案——<code>docker/login-action</code> + <code>build-push-action</code> 推送、拉取重启、<code>/health</code> 健康门禁、失败回滚、运行时密钥注入。所以这不是"没想到"，而是"有意限定范围并写明下一步"。</p>
+        <span class="qa-ref">DEPLOYMENT.md §7</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>这个项目如果交给别人接手，最大的障碍是什么？</summary>
+      <div class="qa-body">
+        <p><strong>SAS 令牌的"体外循环"。</strong></p>
+        <p><code>.dvc/config.local</code> 被 gitignore 是<strong>正确的安全实践</strong>，但代价是：新人 clone 仓库后，<code>dvc pull</code> 会直接失败，而错误信息不会告诉他"你需要向某人要一个 SAS 令牌"。</p>
+        <p>当前 README 提到了这一点，但不够醒目。更好的做法：</p>
+        <ul>
+          <li>提供 <code>.dvc/config.local.example</code>（占位符形式），并在 README 显眼位置说明"首次 clone 需复制此文件并填入令牌"</li>
+          <li>或者用 <code>dvc remote modify --local</code> 的文档化脚本</li>
+        </ul>
+        <p>第二障碍是<strong>环境变量在两个地方</strong>：本地靠手工 <code>-e APP_ENV=local</code>，CD 靠 GitHub Environment Secrets。两者没有单一事实来源。现实中应该用 <code>.env.example</code> + <code>pydantic-settings</code> 统一。</p>
+        <span class="qa-ref">.dvc/config.local · README.md</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>你如何证明"没有把密钥提交进仓库"？</summary>
+      <div class="qa-body">
+        <p>三层证据：</p>
+        <ol class="steps">
+          <li><strong>gitignore 生效</strong>：<code>git check-ignore -v .dvc/config.local</code> 会输出匹配到的规则行。这证明它被规则命中。</li>
+          <li><strong>不在索引里</strong>：<code>git ls-files | grep config.local</code> 无输出。这证明它从未被 <code>git add</code>。</li>
+          <li><strong>全仓库扫描</strong>：<code>scripts/verify_project.py</code> 遍历每一个被跟踪的文本文件，用正则 <code>sp=racwdl|sig=[A-Za-z0-9%]{20,}</code> 搜索 SAS 令牌特征，结果为空。</li>
+        </ol>
+        <p><strong>这里踩过一个坑</strong>：最初我用 <code>git log -p --all</code> 做扫描，结果因为 <code>subprocess</code> 用 GBK 解码抛 <code>UnicodeDecodeError</code>，异常在子线程被吞，检查<strong>假通过</strong>。修复后才真正有效——而且修复后的版本立刻抓到了一个真实命中（脚本自身的正则字面量），证明它确实在工作。</p>
+        <p><strong>局限</strong>：这只检查了当前被跟踪的文件，没有扫描完整的历史提交（<code>git log -p --all</code> 那条约 15 MB 二进制 diff 的路径被我去掉了，因为它既慢又无有效信号）。如果要审计历史，应该用 <code>gitleaks</code> 或 <code>trufflehog</code> 这类专用工具。</p>
+        <span class="qa-ref">scripts/verify_project.py · Git hygiene 段 · 审计记录第 1–2 条</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>为什么不用 GitHub Actions 的 matrix 同时跑两个环境？</summary>
+      <div class="qa-body">
+        <p>因为<strong>两个环境不该同时构建</strong>。</p>
+        <p>matrix 会把 staging 和 production 的构建并行化，但它们的触发条件截然不同：staging 只在合并到 <code>staging</code> 分支时构建，production 只在合并到 <code>main</code> 时构建。任何一次合并<strong>最多只应构建一个环境的镜像</strong>。</p>
+        <p>用两个独立 job + <code>if: github.ref == …</code> 的效果是：一个执行、一个显示为 skipped。这既符合语义（我确实只想构建一个），也让 Actions 页面上的意图一目了然——你能直接看到"production 被跳过了"，而 matrix 里看不到这种对比。</p>
+        <p><strong>另一个原因</strong>：matrix 的值必须能在编译期枚举，而 <code>environment</code> 是 job 级属性，无法在 matrix 里动态绑定不同的 GitHub Environment。这是 Actions 的机制限制。</p>
+        <span class="qa-ref">.github/workflows/cd.yml · if: github.ref</span>
+      </div>
+    </details>
+
+    <details class="qa">
+      <summary>如果 CI 里 96 个测试要跑很久，怎么办？</summary>
+      <div class="qa-body">
+        <p>当前实测整个 CI 约 57 秒，其中测试本身只占很小一部分——<strong>瓶颈是 pip install 和 docker build</strong>，不是测试。所以优化方向应该按收益排序：</p>
+        <div class="table-scroll" style="margin:10px 0">
+          <table>
+            <thead><tr><th>手段</th><th>收益</th><th>成本</th></tr></thead>
+            <tbody>
+              <tr><td><code>setup-python</code> 的 <code>cache: pip</code>（已启用）</td><td>依赖缓存，重复构建省约 20 秒</td><td>已做</td></tr>
+              <tr><td>Docker 层缓存（<code>buildx</code> + <code>cache-from/to: gha</code>）</td><td>CI 的 docker build 从约 36 秒降到几秒</td><td>需要 <code>docker/setup-buildx-action</code></td></tr>
+              <tr><td>测试并行化（<code>pytest-xdist</code>）</td><td>96 个测试本就不慢，收益有限</td><td>增加依赖</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>我的判断</strong>：57 秒对一个 PR 检查来说完全可以接受，加 buildx 缓存是下一个最有价值的优化，但当前不是瓶颈。过早优化会引入不必要的复杂度。</p>
+        <span class="qa-ref">.github/workflows/ci.yml</span>
+      </div>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <p><strong>trade-index-mlops</strong> · 交付验收说明 · 由手册要求逐条生成</p>
+  <p>
+    验证入口：<code>python scripts/verify_project.py</code> ·
+    需求溯源：<code>COMPLIANCE.md</code> ·
+    部署细节：<code>DEPLOYMENT.md</code> ·
+    模型溯源：<code>ml/PROVENANCE.md</code>
+  </p>
+</footer>
+
+</main>
+</div>
+
+<script>
+(function () {
+  document.querySelectorAll('pre').forEach(function (pre) {
+    var btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.type = 'button';
+    btn.textContent = 'copy';
+
+    btn.addEventListener('click', function () {
+      var text = pre.querySelector('code') ? pre.querySelector('code').innerText : pre.innerText;
+      function done() {
+        btn.textContent = 'copied';
+        btn.classList.add('done');
+        setTimeout(function () { btn.textContent = 'copy'; btn.classList.remove('done'); }, 1400);
+      }
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else { fallback(); }
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) { btn.textContent = 'failed'; }
+        document.body.removeChild(ta);
+      }
+    });
+
+    pre.appendChild(btn);
+  });
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var targets = links.map(function (a) {
+    var el = document.getElementById(a.getAttribute('href').slice(1));
+    return el ? { link: a, el: el } : null;
+  }).filter(Boolean);
+
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        links.forEach(function (l) { l.classList.remove('active'); });
+        var match = targets.filter(function (t) { return t.el === entry.target; })[0];
+        if (match) match.link.classList.add('active');
+      });
+    }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+    targets.forEach(function (t) { observer.observe(t.el); });
+  }
+})();
+</script>
+</body>
+</html>

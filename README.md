@@ -272,6 +272,8 @@ Expected prediction: `1366.61`.
 │   ├── model.joblib         # serving artifact (compressed, ~15 MB)
 │   └── run_summary.json     # commit / data version / model type
 ├── data/                    # DVC-managed, not committed
+├── scripts/
+│   └── verify_project.py    # one-command acceptance check
 ├── Dockerfile
 ├── .dockerignore
 ├── pyproject.toml           # ruff + pytest configuration
@@ -279,9 +281,13 @@ Expected prediction: `1366.61`.
 ├── requirements-dev.txt     # + pytest, httpx, ruff
 ├── requirements-train.txt   # + mlflow, pyyaml
 ├── DEPLOYMENT.md
+├── COMPLIANCE.md            # brief requirement → implementation map
 └── .github/workflows/{ci.yml,cd.yml}
 ```
 
 `requirements.txt` intentionally excludes MLflow and PyYAML: they are needed for
 training but not for serving, and leaving them out keeps the image at 181 MB
 instead of roughly 400 MB.
+
+Run `python scripts/verify_project.py` to check the whole deliverable at once;
+[COMPLIANCE.md](COMPLIANCE.md) explains what each requirement maps to.
