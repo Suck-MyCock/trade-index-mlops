@@ -25,8 +25,15 @@ data/processed/*.json
 .dvc/config.local
 
 # MLflow local artifacts
+# MLflow 3.x refuses the ./mlruns file store, so training writes to sqlite.
 mlruns/
 mlartifacts/
+mlflow.db
+mlflow.db-*
+
+# Trained model binaries are rebuilt from the data + code, not committed
+models/*.pkl
+models/*.skops
 
 # Editor / OS
 .vscode/
