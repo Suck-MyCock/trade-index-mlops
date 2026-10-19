@@ -183,7 +183,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Train and log trade-index models.")
     parser.add_argument("--data", default="data/processed/clean_v2.csv")
     parser.add_argument("--config", default=str(DEFAULT_CONFIG))
-    parser.add_argument("--pointer", default="data/raw/raw_dataset.csv.dvc")
+    # Default to the pointer of the dataset actually trained on, so the logged
+    # data_dvc_hash describes v2 rather than the untouched raw v1 file.
+    parser.add_argument("--pointer", default="data/processed/clean_v2.csv.dvc")
     parser.add_argument("--data-version", default="v2")
     parser.add_argument("--tracking-uri", default="sqlite:///mlflow.db")
     parser.add_argument("--experiment", default="trade-index")
