@@ -75,6 +75,52 @@ schemas = read("app/schemas.py")
 check("Field(" in schemas and "ge=" in schemas, "input constraints declared in schemas")
 check('extra="forbid"' in schemas or "extra='forbid'" in schemas, "unknown fields rejected")
 
+
+# ---------------------------------------------------------------------------
+section("1b. Prediction form")
+# ---------------------------------------------------------------------------
+# The form is a shipped artefact, not a dev convenience: without it the only
+# way to try the model is to hand-write JSON. It must therefore be checked.
+form = ROOT / "app/static/index.html"
+group_map = ROOT / "app/static/group_map.json"
+check(form.exists(), "app/static/index.html present")
+check(group_map.exists(), "app/static/group_map.json present")
+
+if form.exists():
+    form_html = form.read_text(encoding="utf-8")
+    # Present in the static markup.
+    for control in ["year", "group", "series", "adv-body", "predict", "pred"]:
+        check(f'id="{control}"' in form_html, f"form has a {control} control")
+    # Built at runtime by script, so look for the id prefix and the field list.
+    check('"adv-" + name' in form_html, "form builds advanced controls at runtime")
+    check('"month"' in form_html, "month is offered among the advanced fields")
+    check('fetch("/predict"' in form_html, "form calls POST /predict")
+    check('fetch("/options"' in form_html, "form loads its options from the API")
+    check(
+        "group_map.json" in form_html,
+        "form narrows series by group",
+    )
+    # month is the weakest feature (importance 0.008). It stays in the API
+    # contract because the model consumes it, but it must not be a primary
+    # control — the form would be offering a knob that does nothing.
+    check('id="month-seg"' not in form_html, "month is not a primary control")
+    # Only real fetches count: an `http://` inside an inline SVG namespaces or
+    # a doc link is not a runtime dependency.
+    external = [
+        tag for tag in ('src="http', 'href="http', "url(http", "@import") if tag in form_html
+    ]
+    check(not external, "form has no external asset dependencies", str(external))
+
+if group_map.exists():
+    groups = json.loads(group_map.read_text(encoding="utf-8"))
+    check(len(groups) >= 20, f"group map covers {len(groups)} groups")
+    sample = next(iter(groups.values()))
+    check("series_title_2" in sample, "group map lists series per group")
+    check("defaults" in sample, "group map supplies coherent defaults")
+
+check('"/options"' in main_py or "'/options'" in main_py, "GET /options endpoint")
+check('mount("/static"' in main_py or "mount('/static'" in main_py, "static files mounted")
+
 artifact = ROOT / "models/model.joblib"
 check(artifact.exists(), "trained artifact committed (models/model.joblib)")
 if artifact.exists():

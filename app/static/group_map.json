@@ -1,0 +1,681 @@
+{
+  "Export price indexes - analytical": {
+    "series_title_2": [
+      "ALCOHOLIC BEVERAGES",
+      "ALL PASTORAL AND DAIRY PRODUCTS",
+      "ALUMINIUM",
+      "ANIMAL OILS AND FATS",
+      "APPLES (FRESH)",
+      "All merchandise",
+      "BEEF AND VEAL",
+      "BUTTER",
+      "CASEIN",
+      "CHEESE",
+      "CHEMICALS AND RELATED PRODUCTS",
+      "CRUDE ANIMAL AND VEGETABLE MATERIALS",
+      "CRUSTACEANS AND MOLLUSCS",
+      "DAIRY - TREASURY",
+      "DAIRY AND CASEIN PRODUCTS",
+      "DAIRY PRODUCTS",
+      "FISH (LIVE, FRESH, CHILLED OR FROZEN)",
+      "FISH AND FISH PREPARATIONS",
+      "FOOD AND BEVERAGES",
+      "FORESTRY PRODUCTS",
+      "FRUIT (FRESH OR PREPARED)",
+      "FRUIT AND VEGETABLES (FRESH OR PREPARED)",
+      "HIDES, SKINS AND FURSKINS - RAW",
+      "IRON AND STEEL",
+      "LAMB",
+      "LAMB, HOGGET AND MUTTON",
+      "LEATHER AND TANNED OR DRESSED FURSKINS",
+      "MACHINERY AND TRANSPORT EQUIPMENT",
+      "MEAT - TREASURY",
+      "MEAT, WOOL AND BY-PRODUCTS",
+      "MILK AND CREAM (LIQUID OR POWDER)",
+      "MILK POWDER",
+      "MINERAL FUELS, OILS AND RELATED MATERIALS",
+      "NEWSPRINT",
+      "NON COMMODITIES - TREASURY",
+      "NON-FOOD MANUFACTURED GOODS",
+      "NON-FUEL CRUDE MATERIALS",
+      "OTHER - TREASURY",
+      "OTHER MEAT",
+      "PAPER AND PAPER PRODUCTS",
+      "PETROLEUM AND PETROLEUM PRODUCTS",
+      "SKIMMED AND BUTTERMILK POWDER",
+      "TEXTILE YARN, FABRICS AND RELATED PRODUCTS",
+      "TEXTILES, CLOTHING, FOOTWEAR",
+      "TOTAL MEAT",
+      "VEGETABLES (FRESH OR PREPARED)",
+      "WHOLE MILK POWDER",
+      "WOOD",
+      "WOOD BASED COMMODITIES - TREASURY",
+      "WOOD MANUFACTURE",
+      "WOOD PULP",
+      "WOOL"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Prices - OTP",
+      "Series_title_1": "Price",
+      "Series_title_3": "June 2002 Quarter Base (=1000)",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 13000
+  },
+  "Export price indexes - analytical - other bases and years": {
+    "series_title_2": [
+      "ALL PASTORAL AND DAIRY PRODUCTS",
+      "ALUMINIUM",
+      "APPLES (FRESH)",
+      "All merchandise",
+      "BEEF AND VEAL",
+      "BUTTER",
+      "CHEESE",
+      "CRUSTACEANS AND MOLLUSCS",
+      "DAIRY AND CASEIN PRODUCTS",
+      "DAIRY PRODUCTS",
+      "FISH AND FISH PREPARATIONS",
+      "FOOD AND BEVERAGES",
+      "FORESTRY PRODUCTS",
+      "FRUIT (FRESH OR PREPARED)",
+      "FRUIT AND VEGETABLES (FRESH OR PREPARED)",
+      "HIDES, SKINS AND FURSKINS - RAW",
+      "IRON AND STEEL",
+      "LAMB, HOGGET AND MUTTON",
+      "MEAT, WOOL AND BY-PRODUCTS",
+      "MILK AND CREAM (LIQUID OR POWDER)",
+      "MILK POWDER",
+      "MINERAL FUELS, OILS AND RELATED MATERIALS",
+      "NEWSPRINT",
+      "NON-FOOD MANUFACTURED GOODS",
+      "NON-FUEL CRUDE MATERIALS",
+      "PAPER AND PAPER PRODUCTS",
+      "SKIMMED AND BUTTERMILK POWDER",
+      "TEXTILE YARN, FABRICS AND RELATED PRODUCTS",
+      "TEXTILES, CLOTHING, FOOTWEAR",
+      "TOTAL MEAT",
+      "VEGETABLES (FRESH OR PREPARED)",
+      "WHOLE MILK POWDER",
+      "WOOD",
+      "WOOD PULP",
+      "WOOL"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Prices - OTP",
+      "Series_title_1": "Price",
+      "Series_title_3": "Mar Year. June 2002 Quarter Base (=1000)",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 3737
+  },
+  "Export price indexes - major trading partners": {
+    "series_title_2": [
+      "Major Trading Partners - New Zealand's Total Exports to Australia",
+      "Major Trading Partners - New Zealand's Total Exports to China",
+      "Major Trading Partners - New Zealand's Total Exports to Japan",
+      "Major Trading Partners - New Zealand's Total Exports to USA",
+      "Major Trading Partners - New Zealand's Total Exports to United Kingdom"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Prices - OTP",
+      "Series_title_1": "Price",
+      "Series_title_3": "June 2002 Quarter Base (=1000)",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 1015
+  },
+  "Export volume indexes and values - analytical": {
+    "series_title_2": [
+      "ALCOHOLIC BEVERAGES",
+      "ALL PASTORAL AND DAIRY PRODUCTS",
+      "ALUMINIUM",
+      "ANIMAL OILS AND FATS",
+      "APPLES (FRESH)",
+      "BEEF AND VEAL",
+      "BUTTER",
+      "CASEIN",
+      "CHEESE",
+      "CHEMICALS AND RELATED PRODUCTS",
+      "CRUDE ANIMAL AND VEGETABLE MATERIALS",
+      "CRUSTACEANS AND MOLLUSCS",
+      "DAIRY - TREASURY",
+      "DAIRY AND CASEIN PRODUCTS",
+      "DAIRY PRODUCTS",
+      "FISH (LIVE, FRESH, CHILLED OR FROZEN)",
+      "FISH AND FISH PREPARATIONS",
+      "FOOD AND BEVERAGES",
+      "FORESTRY PRODUCTS",
+      "FRUIT (FRESH OR PREPARED)",
+      "FRUIT AND VEGETABLES (FRESH OR PREPARED)",
+      "HIDES, SKINS AND FURSKINS - RAW",
+      "IRON AND STEEL",
+      "LAMB",
+      "LAMB, HOGGET AND MUTTON",
+      "LEATHER AND TANNED OR DRESSED FURSKINS",
+      "MACHINERY AND TRANSPORT EQUIPMENT",
+      "MEAT - TREASURY",
+      "MEAT, WOOL AND BY-PRODUCTS",
+      "MILK AND CREAM (LIQUID OR POWDER)",
+      "MILK POWDER",
+      "MINERAL FUELS, OILS AND RELATED MATERIALS",
+      "NEWSPRINT",
+      "NON COMMODITIES - TREASURY",
+      "NON-FOOD MANUFACTURED GOODS",
+      "NON-FUEL CRUDE MATERIALS",
+      "OTHER - TREASURY",
+      "OTHER MEAT",
+      "PAPER AND PAPER PRODUCTS",
+      "PETROLEUM AND PETROLEUM PRODUCTS",
+      "SKIMMED AND BUTTERMILK POWDER",
+      "TEXTILE YARN, FABRICS AND RELATED PRODUCTS",
+      "TEXTILES, CLOTHING, FOOTWEAR",
+      "TOTAL EXPORTS",
+      "TOTAL MEAT",
+      "VEGETABLES (FRESH OR PREPARED)",
+      "WHOLE MILK POWDER",
+      "WOOD",
+      "WOOD BASED COMMODITIES - TREASURY",
+      "WOOD MANUFACTURE",
+      "WOOD PULP",
+      "WOOL"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Volumes and Values - OTV",
+      "Series_title_1": "Volume",
+      "Series_title_3": "June 2002 Quarter Base (=1000)",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 12256
+  },
+  "Export volume indexes and values - analytical - other bases and years": {
+    "series_title_2": [
+      "ALL PASTORAL AND DAIRY PRODUCTS",
+      "ALUMINIUM",
+      "APPLES (FRESH)",
+      "BEEF AND VEAL",
+      "BUTTER",
+      "CHEESE",
+      "CRUSTACEANS AND MOLLUSCS",
+      "DAIRY AND CASEIN PRODUCTS",
+      "DAIRY PRODUCTS",
+      "FISH AND FISH PREPARATIONS",
+      "FOOD AND BEVERAGES",
+      "FORESTRY PRODUCTS",
+      "FRUIT (FRESH OR PREPARED)",
+      "FRUIT AND VEGETABLES (FRESH OR PREPARED)",
+      "HIDES, SKINS AND FURSKINS - RAW",
+      "IRON AND STEEL",
+      "LAMB, HOGGET AND MUTTON",
+      "MEAT, WOOL AND BY-PRODUCTS",
+      "MILK AND CREAM (LIQUID OR POWDER)",
+      "MILK POWDER",
+      "MINERAL FUELS, OILS AND RELATED MATERIALS",
+      "NEWSPRINT",
+      "NON-FOOD MANUFACTURED GOODS",
+      "NON-FUEL CRUDE MATERIALS",
+      "PAPER AND PAPER PRODUCTS",
+      "SKIMMED AND BUTTERMILK POWDER",
+      "TEXTILE YARN, FABRICS AND RELATED PRODUCTS",
+      "TEXTILES, CLOTHING, FOOTWEAR",
+      "TOTAL EXPORTS",
+      "TOTAL MEAT",
+      "VEGETABLES (FRESH OR PREPARED)",
+      "WHOLE MILK POWDER",
+      "WOOD",
+      "WOOD PULP",
+      "WOOL"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Volumes and Values - OTV",
+      "Series_title_1": "Volume",
+      "Series_title_3": "Mar Year. June 2002 Quarter Base (=1000)",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 2113
+  },
+  "Export volume indexes and values - analytical - seasonally adjusted and trend": {
+    "series_title_2": [
+      "ALL PASTORAL AND DAIRY PRODUCTS",
+      "APPLES (FRESH)",
+      "DAIRY AND CASEIN PRODUCTS",
+      "DAIRY PRODUCTS",
+      "FISH AND FISH PREPARATIONS",
+      "FOOD AND BEVERAGES",
+      "FORESTRY PRODUCTS",
+      "MEAT, WOOL AND BY-PRODUCTS",
+      "MILK POWDER",
+      "NON-FOOD MANUFACTURED GOODS",
+      "TOTAL EXPORTS",
+      "TOTAL MEAT",
+      "WOOL"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Volumes and Values - OTV",
+      "Series_title_1": "Volume",
+      "Series_title_3": "June 2002 Quarter Base (=1000)",
+      "Series_title_4": "Seasonally adjusted"
+    },
+    "rows": 3562
+  },
+  "Export volume indexes and values - major trading partners": {
+    "series_title_2": [
+      "Major Trading Partners - New Zealand's Total Exports to Australia",
+      "Major Trading Partners - New Zealand's Total Exports to China",
+      "Major Trading Partners - New Zealand's Total Exports to Japan",
+      "Major Trading Partners - New Zealand's Total Exports to USA",
+      "Major Trading Partners - New Zealand's Total Exports to United Kingdom"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Volumes and Values - OTV",
+      "Series_title_1": "Volume",
+      "Series_title_3": "June 2002 Quarter Base (=1000)",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 1015
+  },
+  "Import price indexes - analytical": {
+    "series_title_2": [
+      "Alcoholic beverages",
+      "All merchandise",
+      "All merchandise imports except fuels",
+      "Alumina",
+      "Cereals and cereal preparations",
+      "Chemicals",
+      "Chemicals and related products",
+      "Clothing and footwear",
+      "Coffee, tea, cocoa and spices",
+      "Crude fertilisers and minerals",
+      "Crude oil",
+      "Electrical machinery and equipment",
+      "Fertilisers - crude and manufactured",
+      "Fertilisers - manufactured",
+      "Food and beverages",
+      "Fruit and vegetables (fresh or prepared)",
+      "Iron and steel",
+      "Machinery and transport equipment",
+      "Mechanical and electrical machinery and equipment",
+      "Non-electrical machinery",
+      "Non-ferrous metals",
+      "Non-food manufactured goods",
+      "Non-fuel crude materials",
+      "Organic chemicals",
+      "Paper and paper products",
+      "Passenger motor cars",
+      "Petroleum and petroleum products",
+      "Plastics and plastic articles",
+      "Road vehicles",
+      "Rubber and rubber articles",
+      "Sugar and sugar preparations",
+      "Textile yarn, fabrics and related products",
+      "Textile yarns, fibres, fabrics and related products",
+      "Textiles, clothing and footwear",
+      "Transport equipment"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Prices - OTP",
+      "Series_title_1": "Price",
+      "Series_title_3": "June 2002 Quarter Base (=1000)",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 8506
+  },
+  "Import price indexes - analytical - other bases and years": {
+    "series_title_2": [
+      "Alumina",
+      "Cereals and Cereal Preparations",
+      "Crude Fertilisers and Minerals",
+      "Electrical Machinery and Apparatus",
+      "Food and Beverages",
+      "Iron and Steel",
+      "Major Trading Partners - NZ's Total Imports from USA",
+      "Mechanical Machinery",
+      "Non-food Manufactured Goods",
+      "Non-fuel Crude Materials",
+      "Organic Chemicals",
+      "Petroleum and Petroleum Products",
+      "Plastics and Plastic Articles",
+      "Road Vehicles",
+      "Sugar and Sugar Preparations",
+      "Textile Yarn, Fabrics and Related Products",
+      "Total Imports",
+      "Total, Imports Less Fuels",
+      "Transport Equipment"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Prices - OTP",
+      "Series_title_1": "Price",
+      "Series_title_3": "Dec Year. June 2002 Quarter Base (=1000)",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 2195
+  },
+  "Import price indexes - by BEC": {
+    "series_title_2": [
+      "Capital goods - machinery and plant.  BEC 41",
+      "Capital goods - total.  BEC 41 & 521",
+      "Capital goods - transport equipment, industrial.  BEC 521",
+      "Consumption goods - consumer goods nes - durable.  BEC 61",
+      "Consumption goods - consumer goods nes - non-durable.  BEC 63",
+      "Consumption goods - consumer goods nes - semi-durable.  BEC 62",
+      "Consumption goods - food and beverages, mainly for household consumption - primary.  BEC 112",
+      "Consumption goods - food and beverages, mainly for household consumption - processed.  BEC 122",
+      "Consumption goods - total.  BEC 112, 122, 522 & 6",
+      "Intermediate goods - food and beverages, mainly for industry - primary.  BEC 111",
+      "Intermediate goods - food and beverages, mainly for industry - processed.  BEC 121",
+      "Intermediate goods - fuels and lubricants - primary.  BEC 31",
+      "Intermediate goods - fuels and lubricants - processed, other than petrol and avgas.  BEC 322",
+      "Intermediate goods - industrial supplies nes - primary.  BEC 21",
+      "Intermediate goods - industrial supplies nes - processed.  BEC 22",
+      "Intermediate goods - parts and accessories of capital goods.  BEC 42 & 53",
+      "Intermediate goods - parts and accessories of transport equipment.  BEC 53",
+      "Intermediate goods - total.  BEC 111, 121, 2, 31, 322, 42 & 53",
+      "Passenger motor cars.  BEC 51",
+      "Petrol and avgas.  BEC 321"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Prices - OTP",
+      "Series_title_1": "Price",
+      "Series_title_3": "June 2002 Quarter Base (=1000)",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 3968
+  },
+  "Import price indexes - major trading partners": {
+    "series_title_2": [
+      "Major Trading Partners - New Zealand's Total Imports from Australia",
+      "Major Trading Partners - New Zealand's Total Imports from China",
+      "Major Trading Partners - New Zealand's Total Imports from Japan",
+      "Major Trading Partners - New Zealand's Total Imports from USA",
+      "Major Trading Partners - New Zealand's Total Imports from United Kingdom"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Prices - OTP",
+      "Series_title_1": "Price",
+      "Series_title_3": "June 2002 Quarter Base (=1000)",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 1015
+  },
+  "Import volume indexes - by BEC - seasonally adjusted and trend": {
+    "series_title_2": [
+      "Capital goods - machinery and plant. BEC 41",
+      "Consumption goods - consumer goods nes - durable. BEC 61",
+      "Consumption goods - consumer goods nes - non-durable. BEC 63",
+      "Consumption goods - consumer goods nes - semi-durable. BEC 62",
+      "Consumption goods - food and beverages, mainly for household consumption - primary. BEC 112",
+      "Consumption goods - food and beverages, mainly for household consumption - processed. BEC 122",
+      "Consumption goods - total. BEC 112, 122, 522 & 6",
+      "Intermediate goods - industrial supplies nes - processed. BEC 22",
+      "Intermediate goods - parts and accessories of capital goods. BEC 42 & 53",
+      "Intermediate goods - total. BEC 111, 121, 2, 31, 322, 42 & 53",
+      "Passenger motor cars. BEC 51"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Volumes and Values - OTV",
+      "Series_title_1": "Volume",
+      "Series_title_3": "June 2002 Quarter Base (=1000)",
+      "Series_title_4": "Trend"
+    },
+    "rows": 2877
+  },
+  "Import volume indexes and values - analytical": {
+    "series_title_2": [
+      "ALCOHOLIC BEVERAGES",
+      "ALUMINA",
+      "CEREALS AND CEREAL PREPARATIONS",
+      "CHEMICALS",
+      "CHEMICALS AND RELATED PRODUCTS",
+      "CLOTHING AND FOOTWEAR",
+      "COFFEE, TEA, SPICES AND COCOA",
+      "CRUDE FERTILISERS AND MINERALS",
+      "CRUDE OIL",
+      "ELECTRICAL MACHINERY AND APPARATUS",
+      "FERTILISERS - CRUDE AND MANUFACTURED",
+      "FERTILISERS - MANUFACTURED",
+      "FOOD AND BEVERAGES",
+      "FRUIT AND VEGETABLES (FRESH OR PREPARED)",
+      "IRON AND STEEL",
+      "MACHINERY AND ELECTRICAL EQUIPMENT",
+      "MACHINERY AND TRANSPORT EQUIPMENT",
+      "NON-ELECTRICAL MACHINERY",
+      "NON-FERROUS METALS",
+      "NON-FOOD MANUFACTURED GOODS",
+      "NON-FUEL CRUDE MATERIALS",
+      "ORGANIC CHEMICALS",
+      "PAPER AND PAPER PRODUCTS",
+      "PASSENGER MOTOR CARS",
+      "PETROLEUM AND PETROLEUM PRODUCTS",
+      "PLASTICS AND PLASTIC ARTICLES",
+      "ROAD VEHICLES",
+      "RUBBER AND RUBBER ARTICLES",
+      "SUGAR AND SUGAR PREPARATIONS",
+      "TEXTILE YARN, FABRICS AND RELATED PRODUCTS",
+      "TEXTILE YARN, TEXTILE FIBRES, FABRICS AND RELATED PRODUCTS",
+      "TEXTILES, CLOTHING, FOOTWEAR",
+      "TOTAL IMPORTS",
+      "TRANSPORT EQUIPMENT"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Volumes and Values - OTV",
+      "Series_title_1": "Volume",
+      "Series_title_3": "June 2002 Quarter Base (=1000)",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 8294
+  },
+  "Import volume indexes and values - analytical - other bases and years": {
+    "series_title_2": [
+      "Alumina",
+      "Cereals and Cereal Preparations",
+      "Crude Fertilisers and Minerals",
+      "Electrical Machinery and Apparatus",
+      "Food and Beverages",
+      "Iron and Steel",
+      "Major Trading Partners - NZ's Total Imports from USA",
+      "Mechanical Machinery",
+      "Non-food Manufactured Goods",
+      "Non-fuel Crude Materials",
+      "Organic Chemicals",
+      "Petroleum and Petroleum Products",
+      "Plastics and Plastic Articles",
+      "Road Vehicles",
+      "Sugar and Sugar Preparations",
+      "Textile Yarn, Fabrics and Related Products",
+      "Total Imports",
+      "Total, Imports Less Fuels",
+      "Transport Equipment"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Volumes and Values - OTV",
+      "Series_title_1": "Volume",
+      "Series_title_3": "Mar Year. June 2002 Quarter Base (=1000)",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 1271
+  },
+  "Import volume indexes and values - analytical - seasonally adjusted and trend": {
+    "series_title_2": [
+      "ALCOHOLIC BEVERAGES",
+      "CHEMICALS AND RELATED PRODUCTS",
+      "CLOTHING AND FOOTWEAR",
+      "ELECTRICAL MACHINERY AND APPARATUS",
+      "FOOD AND BEVERAGES",
+      "FRUIT AND VEGETABLES (FRESH OR PREPARED)",
+      "MACHINERY AND ELECTRICAL EQUIPMENT",
+      "MACHINERY AND TRANSPORT EQUIPMENT",
+      "NON-ELECTRICAL MACHINERY",
+      "NON-FERROUS METALS",
+      "NON-FOOD MANUFACTURED GOODS",
+      "PAPER AND PAPER PRODUCTS",
+      "PLASTICS AND PLASTIC ARTICLES",
+      "RUBBER AND RUBBER ARTICLES",
+      "TEXTILE YARN, FABRICS AND RELATED PRODUCTS",
+      "TEXTILE YARN, TEXTILE FIBRES, FABRICS AND RELATED PRODUCTS",
+      "TEXTILES, CLOTHING, FOOTWEAR",
+      "TOTAL IMPORTS",
+      "TOTAL, IMPORTS LESS FUELS"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Volumes and Values - OTV",
+      "Series_title_1": "Volume",
+      "Series_title_3": "June 2002 Quarter Base (=1000)",
+      "Series_title_4": "Seasonally adjusted"
+    },
+    "rows": 5206
+  },
+  "Import volume indexes and values - by BEC": {
+    "series_title_2": [
+      "Capital goods - machinery and plant. BEC 41",
+      "Capital goods - total. BEC 41 & 521",
+      "Capital goods - transport equipment, industrial. BEC 521",
+      "Consumption goods - consumer goods nes - durable. BEC 61",
+      "Consumption goods - consumer goods nes - non-durable. BEC 63",
+      "Consumption goods - consumer goods nes - semi-durable. BEC 62",
+      "Consumption goods - food and beverages, mainly for household consumption - primary. BEC 112",
+      "Consumption goods - food and beverages, mainly for household consumption - processed. BEC 122",
+      "Consumption goods - total. BEC 112, 122, 522 & 6",
+      "Intermediate goods - food and beverages, mainly for industry - primary. BEC 111",
+      "Intermediate goods - food and beverages, mainly for industry - processed. BEC 121",
+      "Intermediate goods - fuels and lubricants - primary. BEC 31",
+      "Intermediate goods - fuels and lubricants - processed, other than petrol and avgas. BEC 322",
+      "Intermediate goods - industrial supplies nes - primary. BEC 21",
+      "Intermediate goods - industrial supplies nes - processed. BEC 22",
+      "Intermediate goods - parts and accessories of capital goods. BEC 42 & 53",
+      "Intermediate goods - parts and accessories of transport equipment. BEC 53",
+      "Intermediate goods - total. BEC 111, 121, 2, 31, 322, 42 & 53",
+      "Passenger motor cars. BEC 51",
+      "Petrol and avgas. BEC 321"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Volumes and Values - OTV",
+      "Series_title_1": "Volume",
+      "Series_title_3": "June 2002 Quarter Base (=1000)",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 3968
+  },
+  "Import volume indexes and values - major trading partners": {
+    "series_title_2": [
+      "Major Trading Partners - New Zealand's Total Imports from Australia",
+      "Major Trading Partners - New Zealand's Total Imports from China",
+      "Major Trading Partners - New Zealand's Total Imports from Japan",
+      "Major Trading Partners - New Zealand's Total Imports from USA",
+      "Major Trading Partners - New Zealand's Total Imports from United Kingdom"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Volumes and Values - OTV",
+      "Series_title_1": "Volume",
+      "Series_title_3": "June 2002 Quarter Base (=1000)",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 1015
+  },
+  "Services price indexes - exports (Discontinued June 2014)": {
+    "series_title_2": [
+      "Unknown"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Prices - OTP",
+      "Series_title_1": "Total Services",
+      "Series_title_3": "Unknown",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 345
+  },
+  "Services price indexes - exports series": {
+    "series_title_2": [
+      "Unknown"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Prices - OTP",
+      "Series_title_1": "Total Travel",
+      "Series_title_3": "Unknown",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 395
+  },
+  "Services price indexes - imports (Discontinued June 2014)": {
+    "series_title_2": [
+      "Unknown"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Prices - OTP",
+      "Series_title_1": "Total Services",
+      "Series_title_3": "Unknown",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 345
+  },
+  "Services price indexes - imports series": {
+    "series_title_2": [
+      "Unknown"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Prices - OTP",
+      "Series_title_1": "Total Travel",
+      "Series_title_3": "Unknown",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 395
+  },
+  "Terms of Trade - All Countries": {
+    "series_title_2": [
+      "Unknown"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Prices - OTP",
+      "Series_title_1": "June 2002 Quarter Base (=1000)",
+      "Series_title_3": "Unknown",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 369
+  },
+  "Terms of Trade - Services (Discontinued June 2014)": {
+    "series_title_2": [
+      "Unknown"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Prices - OTP",
+      "Series_title_1": "Total Services",
+      "Series_title_3": "Unknown",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 69
+  },
+  "Terms of Trade - Services series": {
+    "series_title_2": [
+      "Unknown"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Prices - OTP",
+      "Series_title_1": "Total Services",
+      "Series_title_3": "Unknown",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 59
+  },
+  "Terms of Trade - Trend": {
+    "series_title_2": [
+      "Unknown"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Prices - OTP",
+      "Series_title_1": "June 2002 Quarter Base (=1000)",
+      "Series_title_3": "Unknown",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 141
+  },
+  "Terms of Trade - major trading partners": {
+    "series_title_2": [
+      "June 2002 Quarter Base (=1000)"
+    ],
+    "defaults": {
+      "Subject": "Overseas Trade Indexes - Prices - OTP",
+      "Series_title_1": "Australia",
+      "Series_title_3": "Unknown",
+      "Series_title_4": "Unknown"
+    },
+    "rows": 206
+  }
+}

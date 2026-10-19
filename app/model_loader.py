@@ -107,6 +107,38 @@ class ModelHolder:
 
         return float(self._pipeline.predict(frame)[0])
 
+    # ------------------------------------------------------------- metadata
+    def categories(self) -> dict[str, list[str]]:
+        """Return the categorical values the model was trained on.
+
+        Read from the fitted ``OneHotEncoder`` rather than from the dataset.
+        That matters for deployment: the inference image deliberately excludes
+        ``data/``, so there is no CSV to read. The encoder's ``categories_``
+        is exactly the set the model can encode, which is what a form needs.
+        """
+        if self._pipeline is None:
+            return {}
+
+        pipeline = self._pipeline
+        prep = getattr(pipeline, "named_steps", {}).get("prep")
+        if prep is None:
+            return {}
+
+        try:
+            encoder = prep.named_transformers_["cat"]
+            columns = prep.transformers_[0][2]
+            categories = encoder.categories_
+        except (AttributeError, KeyError, IndexError):
+            return {}
+
+        return {
+            str(column): sorted(str(value) for value in values)
+            # strict: the encoder stores one category array per input column,
+            # so a length mismatch means the pipeline was not built the way
+            # this method assumes. Failing loudly beats silently truncating.
+            for column, values in zip(columns, categories, strict=True)
+        }
+
 
 # Module-level singleton used by the API. Tests can call ``.reload()`` on it.
 model_holder = ModelHolder()
