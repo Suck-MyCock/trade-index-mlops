@@ -13,7 +13,7 @@ inference API, and separate CI and delivery pipelines.
 | **Dataset** | Stats NZ Overseas Trade Indexes, 104,613 raw rows |
 | **API** | FastAPI, `GET /health` and `POST /predict` |
 | **Image** | `python:3.12-slim`, 181 MB compressed |
-| **Tests** | 65, including multi-case boundary coverage |
+| **Tests** | 96, including multi-case boundary coverage |
 
 ---
 
@@ -37,7 +37,7 @@ inference API, and separate CI and delivery pipelines.
 feature branch
      │  git commit / git push
      ▼
-   dev  ──── pull request ───▶ CI: lint + format + 65 tests + docker build
+   dev  ──── pull request ───▶ CI: lint + format + 96 tests + docker build
      │                          (a red CI blocks the merge)
      │  merge
      ▼
@@ -94,7 +94,7 @@ Runs on **pull requests targeting `dev`, `staging` or `main`**, and on pushes to
 | Install | `pip install -r requirements-dev.txt` | runtime + test + lint dependencies |
 | Lint | `ruff check app ml tests` | static analysis |
 | Format | `ruff format --check app ml tests` | consistent formatting |
-| Test | `pytest -q` | 65 tests, all edge cases |
+| Test | `pytest -q` | 96 tests, all edge cases |
 | Build | `docker build -t trade-index:ci .` | the image must build |
 
 Nothing is pushed from CI. Publishing is the CD workflow's job.
@@ -191,17 +191,19 @@ Rationale for choosing the forest and for optimising RMSE is in
 
 ## Testing
 
-65 tests across three layers.
+96 tests across four files.
 
 | File | Tests | Covers |
 |---|---|---|
 | `tests/unit/test_schemas.py` | 32 | year/month bounds, blank and missing required fields, extra fields, wrong types, optional-field normalisation, column order |
+| `tests/unit/test_data_pipeline.py` | 31 | column renaming, leaky-column removal, unit filtering, constant-column removal, target coercion, null handling, period parsing, idempotency |
 | `tests/integration/test_model_loader.py` | 8 | missing artifact, prediction before load, multi-row rejection, unseen categories, summary handling, reload |
 | `tests/api/test_predict_api.py` | 25 | health, deterministic predictions, 6 kinds of invalid payload, 9 per-field omissions, empty body, unseen categories, 503 without a model, OpenAPI schema |
 
 Notable boundary cases: years 1899/2100/2101/9999, months 0/−1/13/99, a string
-where an int is required, an empty JSON body, and a category never seen during
-training.
+where an int is required, an empty JSON body, a category never seen during
+training, a malformed `Period` (`""`, `"2020"`, `"2020-06"`), and an empty frame
+passed to the cleaning pipeline.
 
 ```bash
 pytest -q
