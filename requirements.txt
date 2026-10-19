@@ -1,0 +1,10 @@
+# Runtime dependencies — what the inference image needs, nothing more.
+# Training-only packages live in requirements-train.txt so the Docker image
+# does not have to carry MLflow and its transitive dependencies.
+fastapi
+uvicorn
+pydantic
+pandas
+numpy
+scikit-learn
+joblib

@@ -1,0 +1,9 @@
+# Hyperparameters for the tuned RandomForest experiment.
+#
+# The baseline experiment uses LinearRegression with sklearn defaults; only the
+# forest needs a config entry. Keeping these values here means the training
+# script never hard-codes them, so an experiment can be re-run by editing YAML.
+random_forest:
+  n_estimators: 120
+  max_depth: 20
+  min_samples_leaf: 2

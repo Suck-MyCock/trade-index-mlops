@@ -1,0 +1,101 @@
+name: CD
+
+# Delivery runs only when work lands on a deployment branch. A pull request
+# never reaches this workflow, so a PR cannot produce an image.
+on:
+  push:
+    branches: [staging, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cd-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # staging: built from the staging Environment's secrets
+  # ---------------------------------------------------------------------------
+  build-staging:
+    name: Build staging image
+    if: github.ref == 'refs/heads/staging'
+    runs-on: ubuntu-latest
+    # Declaring the environment makes GitHub resolve secrets from the staging
+    # Environment, not from the repository-wide defaults. That is what keeps
+    # staging and production configuration separate.
+    environment: staging
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      # The brief asks for an .env generated from environment-specific secrets.
+      # It is written to the runner's workspace and its values are passed to the
+      # build as arguments, so no secret file ends up inside an image layer.
+      - name: Create staging .env from secrets
+        env:
+          APP_ENV: ${{ secrets.APP_ENV }}
+          LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+        run: |
+          : "${APP_ENV:=staging}"
+          : "${LOG_LEVEL:=INFO}"
+          {
+            echo "APP_ENV=${APP_ENV}"
+            echo "LOG_LEVEL=${LOG_LEVEL}"
+          } > .env
+          echo "Generated .env:"
+          cat .env
+
+      - name: Build staging image
+        run: |
+          set -a
+          . ./.env
+          set +a
+          docker build \
+            --build-arg APP_ENV="${APP_ENV}" \
+            --build-arg LOG_LEVEL="${LOG_LEVEL}" \
+            --tag "trade-index:staging" \
+            --tag "trade-index:staging-${GITHUB_SHA::12}" \
+            .
+          docker image ls trade-index
+
+  # ---------------------------------------------------------------------------
+  # production: built from the production Environment's secrets
+  # ---------------------------------------------------------------------------
+  build-production:
+    name: Build production image
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Create production .env from secrets
+        env:
+          APP_ENV: ${{ secrets.APP_ENV }}
+          LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+        run: |
+          : "${APP_ENV:=production}"
+          : "${LOG_LEVEL:=WARNING}"
+          {
+            echo "APP_ENV=${APP_ENV}"
+            echo "LOG_LEVEL=${LOG_LEVEL}"
+          } > .env
+          echo "Generated .env:"
+          cat .env
+
+      - name: Build production image
+        run: |
+          set -a
+          . ./.env
+          set +a
+          docker build \
+            --build-arg APP_ENV="${APP_ENV}" \
+            --build-arg LOG_LEVEL="${LOG_LEVEL}" \
+            --tag "trade-index:production" \
+            --tag "trade-index:production-${GITHUB_SHA::12}" \
+            .
+          docker image ls trade-index

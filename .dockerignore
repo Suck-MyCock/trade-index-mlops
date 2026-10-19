@@ -1,0 +1,52 @@
+# Keep the build context small and secret-free.
+#
+# The two things that matter most here:
+#   * data/ holds the raw 23 MB CSV and the 16 MB cleaned CSV. Neither is needed
+#     to serve predictions, and shipping them would bloat the image.
+#   * .dvc/config.local and .env hold credentials and must never enter an image.
+
+# Version control and local environments
+.git/
+.gitignore
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Test and lint caches
+.pytest_cache/
+.ruff_cache/
+
+# Tests are not part of the runtime image
+tests/
+pytest.ini
+
+# Data is mounted or fetched with DVC, not baked into the image
+data/
+.dvc/
+.dvcignore
+*.csv
+*.parquet
+
+# Experiment tracking output
+mlruns/
+mlartifacts/
+mlflow.db
+mlflow.db-*
+
+# Credentials
+.env
+.env.*
+.dvc/config.local
+
+# Documentation and CI config
+*.md
+.github/
+.gitattributes
+
+# Editor and OS noise
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
