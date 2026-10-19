@@ -100,3 +100,18 @@ class HealthResponse(BaseModel):
     model_loaded: bool
     model_type: str | None = None
     data_version: str | None = None
+
+
+class OptionsResponse(BaseModel):
+    """Everything the form needs to build a valid request.
+
+    ``categorical`` is read from the fitted encoder, so every option is a value
+    the model can actually encode. The numeric bounds mirror the constraints in
+    :class:`PredictRequest`, keeping the form and the validator consistent.
+    """
+
+    categorical: dict[str, list[str]]
+    year_min: int
+    year_max: int
+    month_min: int
+    month_max: int

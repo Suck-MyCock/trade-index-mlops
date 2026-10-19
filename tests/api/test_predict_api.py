@@ -42,6 +42,69 @@ def test_health_reports_model_loaded(client):
     assert body["data_version"] == "v2"
 
 
+# --------------------------------------------------------------- form UI
+def test_root_serves_the_form(client):
+    """The root path must return the HTML form, not a 404 or JSON."""
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/html")
+    assert "Trade Index Predictor" in response.text
+
+
+def test_options_lists_every_categorical_field(client):
+    response = client.get("/options")
+    assert response.status_code == 200
+    body = response.json()
+    expected = {
+        "STATUS",
+        "Subject",
+        "Group",
+        "Series_title_1",
+        "Series_title_2",
+        "Series_title_3",
+        "Series_title_4",
+    }
+    assert set(body["categorical"]) == expected
+    for name, values in body["categorical"].items():
+        assert values, f"{name} has no options"
+        assert values == sorted(values), f"{name} is not sorted"
+
+
+def test_options_numeric_bounds_match_the_schema(client):
+    """The form's bounds must be the validator's bounds, not a second opinion."""
+    body = client.get("/options").json()
+    assert body["year_min"] == 1900
+    assert body["year_max"] == 2100
+    assert body["month_min"] == 1
+    assert body["month_max"] == 12
+
+
+def test_every_option_is_accepted_by_the_api(client):
+    """Each option the form offers must actually validate.
+
+    This is the test that keeps the UI honest: if the encoder ever exposes a
+    value the schema rejects, the form would offer a choice that always fails.
+    """
+    options = client.get("/options").json()["categorical"]
+    for field, values in options.items():
+        payload = {**VALID_PAYLOAD, field: values[0]}
+        response = client.post("/predict", json=payload)
+        assert response.status_code == 200, (
+            f"option {values[0]!r} for {field} was rejected: {response.text}"
+        )
+
+
+def test_options_endpoint_returns_empty_before_model_load(client):
+    """Without a model the form should degrade, not crash."""
+    model_holder._pipeline = None
+    try:
+        response = client.get("/options")
+        assert response.status_code == 200
+        assert response.json()["categorical"] == {}
+    finally:
+        model_holder.load()
+
+
 def test_health_reports_environment(client):
     """APP_ENV drives the reported environment; it defaults to "local"."""
     body = client.get("/health").json()

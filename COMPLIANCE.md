@@ -38,15 +38,15 @@ documented metrics exactly when re-evaluated against `data/processed/clean_v2.cs
 
 | | |
 |---|---|
-| **Where** | `tests/` — four files, **96 tests** |
-| **Proof** | `pytest -q` → `96 passed` |
+| **Where** | `tests/` — four files, **101 tests** |
+| **Proof** | `pytest -q` → `101 passed` |
 
 | File | Tests | Boundary cases |
 |---|---|---|
 | `tests/unit/test_schemas.py` | 32 | years 1899/2100/2101/9999; months 0/−1/13/99; blank required fields; 9 per-field omissions; extra field; string/None/float/list where an int is required |
 | `tests/unit/test_data_pipeline.py` | 31 | column rename; leaky-column removal; unit filtering; empty-frame handling; target coercion; unparseable target; NaN and blank categoricals; 5 malformed `Period` values; idempotency |
 | `tests/integration/test_model_loader.py` | 8 | missing artifact; predict-before-load; multi-row input; unseen categories; summary present/absent; reload |
-| `tests/api/test_predict_api.py` | 25 | health; determinism; 6 invalid payloads; 9 per-field omissions; empty body; unseen categories; 503 without a model; OpenAPI schema |
+| `tests/api/test_predict_api.py` | 30 | health; determinism; 6 invalid payloads; 9 per-field omissions; empty body; unseen categories; 503 without a model; OpenAPI schema |
 
 **This exceeds the minimum of 3 by a wide margin, and each case is a distinct
 assertion rather than a repeated happy path.**
@@ -97,7 +97,7 @@ Specific measures:
 | | |
 |---|---|
 | **Where** | `.github/workflows/ci.yml`, step `Run tests` |
-| **Proof** | Actions run on PR #1/#2 → `96 passed` |
+| **Proof** | Actions run on PR #1/#2 → `101 passed` |
 
 ### R2.5 — CI runs linting / static analysis
 
@@ -283,7 +283,7 @@ python scripts/verify_project.py
 ```
 
 ```
-97/97 checks passed
+115/115 checks passed
 PROJECT COMPLETE
 ```
 
