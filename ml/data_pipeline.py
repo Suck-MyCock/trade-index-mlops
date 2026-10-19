@@ -135,10 +135,7 @@ def drop_constant_columns(
     kept = [c for c in features if c in df.columns and df[c].nunique() >= min_unique]
     dropped = [c for c in features if c in df.columns and c not in kept]
 
-    if dropped:
-        out = df.drop(columns=dropped)
-    else:
-        out = df.copy()
+    out = df.drop(columns=dropped) if dropped else df.copy()
     return out, kept
 
 

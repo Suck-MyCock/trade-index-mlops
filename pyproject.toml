@@ -1,0 +1,57 @@
+[project]
+name = "trade-index-mlops"
+version = "1.0.0"
+description = "ML-powered NZ overseas trade index predictor with DevOps and MLOps practices"
+requires-python = ">=3.12"
+
+# ---------------------------------------------------------------------------
+# Ruff: the single tool used for both linting and format checking in CI.
+# Pinning the rule set here means a local run and a CI run agree, which is what
+# makes "A PR cannot be merged if CI fails" meaningful.
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["app", "ml", "tests"]
+
+exclude = [
+    ".venv",
+    "venv",
+    "data",
+    "models",
+    "mlruns",
+    "__pycache__",
+    ".dvc",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # import sorting
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+]
+ignore = [
+    "E501",  # line length is enforced by the formatter, not the linter
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests reach into private attributes on purpose to simulate failure modes.
+"tests/**" = ["SLF001"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+# ---------------------------------------------------------------------------
+# pytest
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra"
+filterwarnings = ["ignore::DeprecationWarning"]

@@ -1,5 +1,18 @@
 {
   "git_commit": "73de586a2402a12893b553c56d37ad7db90cfd6f",
   "data_version": "v2",
-  "data_dvc_hash": "a0f682da4b534942450d8f30ba6cca1d"
+  "data_dvc_hash": "a0f682da4b534942450d8f30ba6cca1d",
+  "model_file": "models/model.joblib",
+  "model_type": "RandomForestRegressor",
+  "feature_columns": [
+    "year",
+    "month",
+    "STATUS",
+    "Subject",
+    "Group",
+    "Series_title_1",
+    "Series_title_2",
+    "Series_title_3",
+    "Series_title_4"
+  ]
 }

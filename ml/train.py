@@ -18,6 +18,7 @@ import json
 import subprocess
 from pathlib import Path
 
+import joblib
 import mlflow
 import mlflow.sklearn
 import numpy as np
@@ -148,11 +149,13 @@ def run_experiment(
     commit: str,
     data_version: str,
     data_hash: str,
-) -> dict[str, float]:
-    """Fit one model, evaluate it, and record everything in MLflow."""
-    pipeline = Pipeline(
-        steps=[("prep", build_preprocessor(categoricals)), ("model", model)]
-    )
+) -> tuple[Pipeline, dict[str, float]]:
+    """Fit one model, evaluate it, and record everything in MLflow.
+
+    Returns the fitted pipeline so the caller can export it for serving, plus
+    the hold-out metrics.
+    """
+    pipeline = Pipeline(steps=[("prep", build_preprocessor(categoricals)), ("model", model)])
 
     with mlflow.start_run(run_name=name):
         mlflow.log_param("git_commit", commit)
@@ -171,12 +174,10 @@ def run_experiment(
         # MLflow 3.x serialises sklearn models with skops, which refuses tree
         # ensembles unless the tree type is explicitly trusted. We trained this
         # model ourselves in-process, so it is safe to trust it here.
-        mlflow.sklearn.log_model(
-            pipeline, name="model", skops_trusted_types=TRUSTED_SKOPS_TYPES
-        )
+        mlflow.sklearn.log_model(pipeline, name="model", skops_trusted_types=TRUSTED_SKOPS_TYPES)
 
         print(f"[{name}] " + "  ".join(f"{k}={v:.4f}" for k, v in metrics.items()))
-        return metrics
+        return pipeline, metrics
 
 
 def main() -> None:
@@ -210,16 +211,16 @@ def main() -> None:
     mlflow.set_tracking_uri(args.tracking_uri)
     mlflow.set_experiment(args.experiment)
 
-    common = dict(
-        X_train=X_train,
-        X_test=X_test,
-        y_train=y_train,
-        y_test=y_test,
-        categoricals=categoricals,
-        commit=commit,
-        data_version=args.data_version,
-        data_hash=data_hash,
-    )
+    common = {
+        "X_train": X_train,
+        "X_test": X_test,
+        "y_train": y_train,
+        "y_test": y_test,
+        "categoricals": categoricals,
+        "commit": commit,
+        "data_version": args.data_version,
+        "data_hash": data_hash,
+    }
 
     baseline_params = {"model_type": "LinearRegression", "fit_intercept": True}
     run_experiment(
@@ -237,7 +238,7 @@ def main() -> None:
         "min_samples_leaf": forest_cfg.get("min_samples_leaf", 1),
         "random_state": RANDOM_STATE,
     }
-    run_experiment(
+    forest_pipeline, _forest_metrics = run_experiment(
         name="tuned-forest",
         model=RandomForestRegressor(
             n_estimators=forest_params["n_estimators"],
@@ -250,12 +251,25 @@ def main() -> None:
         **common,
     )
 
-    summary = {"git_commit": commit, "data_version": args.data_version,
-               "data_dvc_hash": data_hash}
-    Path("models").mkdir(exist_ok=True)
-    Path("models/run_summary.json").write_text(
-        json.dumps(summary, indent=2), encoding="utf-8"
-    )
+    # Export the production-worthy model next to the run summary so the API can
+    # load it without needing an MLflow tracking server at request time.
+    # compress=3 shrinks a 46 MB forest to ~15 MB, which keeps the inference
+    # image and the repository small without slowing the dump noticeably.
+    models_dir = Path("models")
+    models_dir.mkdir(exist_ok=True)
+    model_path = models_dir / "model.joblib"
+    joblib.dump(forest_pipeline, model_path, compress=3)
+    print(f"Exported production model to {model_path}")
+
+    summary = {
+        "git_commit": commit,
+        "data_version": args.data_version,
+        "data_dvc_hash": data_hash,
+        "model_file": str(model_path),
+        "model_type": forest_params["model_type"],
+        "feature_columns": list(NUMERIC_FEATURES) + list(common["categoricals"]),
+    }
+    (models_dir / "run_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(f"\nRun ``mlflow ui --backend-store-uri {args.tracking_uri}`` to inspect.")
 
 

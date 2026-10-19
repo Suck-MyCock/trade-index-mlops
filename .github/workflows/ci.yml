@@ -1,0 +1,57 @@
+name: CI
+
+# The brief requires the CI checks on every pull request targeting a protected
+# branch. `dev` is included because it is the integration branch: a feature is
+# only merged into it after these checks pass.
+on:
+  pull_request:
+    branches: [main, staging, dev]
+  push:
+    branches: [dev]
+
+# The workflow only reads the repository; no write token is needed.
+permissions:
+  contents: read
+
+# A new push to the same PR cancels the previous run, so reviewers are never
+# waiting on a stale result.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-lint-build:
+    name: Test, lint and build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      # Check 1 of 3: static analysis. Runs before the tests so an obvious
+      # syntax or import problem fails fast.
+      - name: Lint
+        run: python -m ruff check app ml tests
+
+      - name: Check formatting
+        run: python -m ruff format --check app ml tests
+
+      # Check 2 of 3: the full test suite.
+      - name: Run tests
+        run: python -m pytest -q
+
+      # Check 3 of 3: the image must build. Nothing is pushed from CI; that is
+      # the CD workflow's job and only happens on a merge to staging or main.
+      - name: Build Docker image
+        run: docker build --tag trade-index:ci .
