@@ -6,22 +6,40 @@ venv/
 .pytest_cache/
 .ruff_cache/
 
-# Data
-data/raw/
-*.csv
-!data/**/*.dvc
+# Local pip / pytest scratch directories created when the system temp dir is
+# not writable.
+.piptmp/
+pytest-of-*/
+
+# Data: DVC tracks pointers; only ignore the data payloads themselves.
+# NOTE: never use a bare "data/raw/*" wildcard here. It makes DVC 3.x stop
+# discovering the .dvc pointer files (verified on DVC 3.67.1 / Windows).
+data/raw/*.csv
+data/raw/*.parquet
+data/raw/*.json
+data/processed/*.csv
+data/processed/*.parquet
+data/processed/*.json
 .dvc/cache/
 .dvc/tmp/
 
-# Secrets
+# Secrets: never commit
 .env
 .env.*
 !.env.example
 .dvc/config.local
 
-# MLflow
+# MLflow local artifacts
+# MLflow 3.x refuses the ./mlruns file store, so training writes to sqlite.
 mlruns/
 mlartifacts/
+mlflow.db
+mlflow.db-*
+
+# Model binaries: the serving artifact (model.joblib) IS committed so CI can
+# build a working image without retraining. Alternate formats are not.
+models/*.pkl
+models/*.skops
 
 # Editor / OS
 .vscode/

@@ -1,0 +1,5 @@
+# Training-only dependencies: MLflow experiment tracking and YAML config
+# parsing. Kept out of requirements.txt so the deployment image stays slim.
+-r requirements.txt
+mlflow
+pyyaml
